@@ -49,6 +49,7 @@ public final class AnalyzedTokenReadings implements Iterable<AnalyzedToken> {
   private boolean isSentEnd;
   private boolean isParaEnd;
   private boolean isWhitespaceBefore;
+  private boolean isPosTagUnknown;
 
   // If true, then the token is marked up as immune against tests:
   // it should never be matched by any rule. Used to have generalized
@@ -84,6 +85,7 @@ public final class AnalyzedTokenReadings implements Iterable<AnalyzedToken> {
     isSentStart = SENTENCE_START_TAGNAME.equals(anTokReadings[0].getPOSTag());
     isParaEnd = hasPosTag(PARAGRAPH_END_TAGNAME);
     isSentEnd = hasPosTag(SENTENCE_END_TAGNAME);
+    isPosTagUnknown = tokens.size() == 1 && tokens.get(0).getPOSTag() == null;
     setNoRealPOStag();
     hasSameLemmas = areLemmasSame();
   }
@@ -141,6 +143,26 @@ public final class AnalyzedTokenReadings implements Iterable<AnalyzedToken> {
   }
 
   /**
+   * Checks if one of the token's readings has one of the given lemmas
+   *
+   * @param lemmas to look for
+   */
+  public boolean hasAnyLemma(String... lemmas) {
+    boolean found = false;
+    for(String lemma : lemmas) {
+      for (AnalyzedToken reading : anTokReadings) {
+        if (reading.getLemma() != null) {
+          found = lemma.equals(reading.getLemma());
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+    return found;
+  }
+
+  /**
    * Checks if the token has a particular POS tag, whereas only a part of the given POS tag needs to match.
    *
    * @param posTag POS tag substring to look for
@@ -151,6 +173,40 @@ public final class AnalyzedTokenReadings implements Iterable<AnalyzedToken> {
     for (AnalyzedToken reading : anTokReadings) {
       if (reading.getPOSTag() != null) {
         found = reading.getPOSTag().contains(posTag);
+        if (found) {
+          break;
+        }
+      }
+    }
+    return found;
+  }
+
+ /**
+  * Checks if the token has amy of the given particular POS tags (only a part of the given POS tag needs to match)
+  *
+  * @param posTags POS tag substring to look for
+  * @since 4.0
+  */
+  public boolean hasAnyPartialPosTag(String... posTags) {
+    for (String posTag : posTags) {
+      if (hasPartialPosTag(posTag)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks if the token has a postag starting with the given string.
+   *
+   * @param posTag POS tag substring to look for
+   * @since 4.0
+   */
+  public boolean hasPosTagStartingWith(String posTag) {
+    boolean found = false;
+    for (AnalyzedToken reading : anTokReadings) {
+      if (reading.getPOSTag() != null) {
+        found = reading.getPOSTag().startsWith(posTag);
         if (found) {
           break;
         }
@@ -388,6 +444,14 @@ public final class AnalyzedTokenReadings implements Iterable<AnalyzedToken> {
     return isIgnoredBySpeller;
   }
 
+  /**
+   * Test if the token's POStag equals null.
+   * @return true if the token does not have a POStag
+   * @since 3.9
+   */
+  public boolean isPosTagUnknown() {
+    return isPosTagUnknown;
+  }
 
   /**
    * Sets the flag on AnalyzedTokens to make matching

@@ -38,20 +38,35 @@ public class WordListValidatorTest {
 
   private static final Pattern VALID_CHARS = Pattern.compile(
           "[0-9a-zA-ZöäüÖÄÜßëçèéêáàóòôÈÉÁÀÓÒãñíîş" +
+          "âêôõû" +  // for Portuguese
           "Œ€ūαΑβΒγΓδΔεΕζΖηΗθΘιΙκΚλΛμΜνΝξΞοΟπΠρΡσΣτΤυΥφΦχΧψΨωΩάΆέΈίΊήΉύΎϊϋΰΐœţ" +
           "Śśōżúï" +
           "·" +   // for Catalan
           "./-]+" + 
-          "|[khmcd]m[²³]"
+          "|[khmcdµ]?m[²³]"
   );
 
   // Words that are valid but with special characters so that we don't want to
   // allow them in general:
   private static final Set<String> VALID_WORDS = new HashSet<>(Arrays.asList(
+          "Mondelēz",
+          "Brač",
           "Hidschāb/S",
           "Dvořák/S",
           "Erdoğan/S",
-          "'Ndrangheta"
+          "Ångström",
+          "ångström",
+          "ångströms",
+          "'Ndrangheta",
+          "McDonald's",
+          "µm",
+          "µg",
+          "µl",
+          "CD&V",
+          "C&A",
+          "P&O",
+          "S&P",
+          "V&D"
   ));
 
   @Test

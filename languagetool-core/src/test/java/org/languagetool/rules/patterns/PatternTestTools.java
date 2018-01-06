@@ -40,14 +40,22 @@ public final class PatternTestTools {
   // These characters should not be present in token values as they split tokens in all languages.
   private static final Pattern TOKEN_SEPARATOR_PATTERN = Pattern.compile("[ 	.,:;…!?(){}<>«»\"]");
 
-  private static final Pattern PROBABLE_PATTERN = Pattern.compile(".*([^*]\\*|[.+?{}()|\\[\\]].*|\\\\d).*");
+  private static final Pattern PROBABLE_PATTERN = Pattern.compile("(\\\\[dDsSwW])|.*([^*]\\*|[.+?{}()|\\[\\]].*|\\\\d).*");
 
   // Polish POS tags use dots, so do not consider the presence of a dot
   // as indicating a probable regular expression.
-  private static final Pattern PROBABLE_PATTERN_PL_POS = Pattern.compile(".*([^*]\\*|[+?{}()|\\[\\]].*|\\\\d).*");
+  private static final Pattern PROBABLE_PATTERN_PL_POS = Pattern.compile("(\\\\[dDsSwW])|.*([^*]\\*|[+?{}()|\\[\\]].*|\\\\d).*");
 
   private static final Pattern CHAR_SET_PATTERN = Pattern.compile("\\[^?([^\\]]+)\\]");
   private static final Pattern STRICT_CHAR_SET_PATTERN = Pattern.compile("(\\(\\?-i\\))?.*(?<!\\\\)\\[^?([^\\]]+)\\]");
+
+  /*
+   * These strings are not be recognized as a regular expression
+   */
+  private static final Set<String> NO_REGEXP = new HashSet<>(Arrays.asList(
+    "PRP:LOK+TMP+MOD:DAT+AKK"
+    ));
+
 
   private PatternTestTools() {
   }
@@ -108,14 +116,16 @@ public final class PatternTestTools {
         for (PatternToken exception: pToken.getExceptionList()) {
           // Detect useless exception or missing skip="...". I.e. things like this:
           // <token postag="..."><exception scope="next">foo</exception</token>
-          if (exception.hasNextException() && pToken.getSkipNext() == 0) {
-            System.err.println("The " + lang + " rule: "
-                    + ruleId + "[" + ruleSubId + "]"
-                    + " (exception in token [" + i + "])"
-                    + " has no skip=\"...\" and yet contains scope=\"next\""
-                    + " so the exception never applies."
-                    + " Did you forget skip=\"...\"?");
-          }
+          
+          // We now allow scope="next" without skip="..."
+//          if (exception.hasNextException() && pToken.getSkipNext() == 0) {
+//            System.err.println("The " + lang + " rule: "
+//                    + ruleId + "[" + ruleSubId + "]"
+//                    + " (exception in token [" + i + "])"
+//                    + " has no skip=\"...\" and yet contains scope=\"next\""
+//                    + " so the exception never applies."
+//                    + " Did you forget skip=\"...\"?");
+//          }
 
           // Detect exception that can't possibly be matched.
           if ( !pToken.getString().isEmpty()
@@ -332,7 +342,7 @@ public final class PatternTestTools {
             : PROBABLE_PATTERN;       // something else than Polish POS tag.
 
     if (!isRegularExpression && stringValue.length() > 1
-            && regexPattern.matcher(stringValue).find()) {
+            && regexPattern.matcher(stringValue).find() && !NO_REGEXP.contains(stringValue)) {
       System.err.println("The " + lang + " rule: "
               + ruleId + ", token [" + tokenIndex + "], contains " + "\"" + stringValue
               + "\" that is not marked as regular expression but probably is one.");

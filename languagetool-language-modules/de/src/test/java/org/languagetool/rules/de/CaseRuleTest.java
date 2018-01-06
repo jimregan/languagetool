@@ -103,7 +103,28 @@ public class CaseRuleTest {
     assertGood("Tom vollbringt Außerordentliches.");
     assertGood("Er führt Böses im Schilde.");
     assertGood("Es gab Überlebende.");
+    assertGood("'Wir werden das stoppen.'");
+    assertGood("Wahre Liebe muss das aushalten.");
+    assertGood("Du kannst das machen.");
+    assertGood("Vor dem Aus stehen.");
+    assertGood("Ich Armer!");
+    assertGood("Parks Vertraute Choi Soon Sil ist zu drei Jahren Haft verurteilt worden.");
+    assertGood("Bei einer Veranstaltung Rechtsextremer passierte es.");
+    assertGood("Eine Gruppe Betrunkener singt.");
+    assertGood("Bei Betreten des Hauses.");
+    assertGood("Das Aus für Italien ist bitter.");
+    assertGood("Das Aus kam unerwartet.");
+    assertGood("Anmeldung bis Fr. 1.12.");
+    assertGood("Weil er Unmündige sexuell missbraucht haben soll, wurde ein Lehrer verhaftet.");
+    assertGood("Tausende Gläubige kamen.");
+    assertGood("Es kamen Tausende Gläubige.");
+    assertGood("Das schließen Forscher aus den gefundenen Spuren.");
+    assertGood("Wieder Verletzter bei Unfall");
 
+    //assertBad("Sie sind nicht Verständlich");
+    assertBad("Sie Vertraute niemandem.");
+    assertBad("Beten Lernt man in Nöten.");
+    assertBad("Ich gehe gerne Joggen.");
     assertBad("Er ist Groß.");
     assertBad("Die Zahl ging auf Über 1.000 zurück.");
     assertBad("Er sammelt Große und kleine Tassen.");
@@ -119,6 +140,8 @@ public class CaseRuleTest {
     assertBad("Dabei Übersah er sie.");
     assertBad("Der Brief wird am Mittwoch in Brüssel Übergeben.");
     assertBad("Damit sollen sie die Versorgung in der Region Übernehmen.");
+    assertBad("Die Unfallursache scheint geklärt, ein Lichtsignal wurde Überfahren.");
+    assertBad("Der Lenker hatte die Höchstgeschwindigkeit um 76 km/h Überschritten.");
     assertGood("Ich möchte zwei Kilo Zwiebeln.");
     // "NIL" reading in Morphy that used to confuse CaseRule:
     assertGood("Ein Menschenfreund.");
@@ -131,6 +154,8 @@ public class CaseRuleTest {
     assertGood("Schon Le Monde schrieb das.");
     // unknown word:
     assertGood("In Blubberdorf macht man das so.");
+    // Exception definied in case_rule_exceptions.txt:
+    assertGood("Der Thriller spielt zur Zeit des Zweiten Weltkriegs");
 
     assertGood("Anders als physikalische Konstanten werden mathematische Konstanten unabhängig von jedem physikalischen Maß definiert.");
     assertGood("Eine besonders einfache Klasse bilden die polylogarithmischen Konstanten.");
@@ -241,6 +266,14 @@ public class CaseRuleTest {
     assertGood("Die zum Tode Verurteilten wurden in den Hof geführt.");
     assertGood("Wenn Sie das schaffen, retten Sie mein Leben!");
     assertGood("Etwas Grünes, Schleimiges klebte an dem Stein.");
+    assertGood("Er befürchtet Schlimmeres.");
+    
+    // uppercased adjective compounds
+    assertGood("Er isst UV-bestrahltes Obst.");
+    assertGood("Er isst Na-haltiges Obst.");
+    assertGood("Er vertraut auf CO2-arme Wasserkraft");
+    assertGood("Das Entweder-oder ist kein Problem.");
+    assertGood("Er liebt ihre Makeup-freie Haut.");
   }
 
   private void assertGood(String input) throws IOException {

@@ -38,9 +38,10 @@ import org.languagetool.rules.uk.MixedAlphabetsRule;
 import org.languagetool.rules.uk.MorfologikUkrainianSpellerRule;
 import org.languagetool.rules.uk.SimpleReplaceRule;
 import org.languagetool.rules.uk.SimpleReplaceSoftRule;
-import org.languagetool.rules.uk.TokenAgreementRule;
-import org.languagetool.rules.uk.TokenInflectionAgreementRule;
-import org.languagetool.rules.uk.TokenVerbAgreementRule;
+import org.languagetool.rules.uk.SimpleReplaceRenamedRule;
+import org.languagetool.rules.uk.TokenAgreementPrepNounRule;
+import org.languagetool.rules.uk.TokenAgreementAdjNounRule;
+import org.languagetool.rules.uk.TokenAgreementNounVerbRule;
 import org.languagetool.rules.uk.UkrainianWordRepeatRule;
 import org.languagetool.synthesis.Synthesizer;
 import org.languagetool.synthesis.uk.UkrainianSynthesizer;
@@ -159,14 +160,15 @@ public class Ukrainian extends Language {
         //            new DoublePunctuationRule(messages),
         new MorfologikUkrainianSpellerRule(messages, this),
 
-        new TokenVerbAgreementRule(messages),
-        new TokenInflectionAgreementRule(messages),
-        new TokenAgreementRule(messages),
+        new TokenAgreementNounVerbRule(messages),
+        new TokenAgreementAdjNounRule(messages),
+        new TokenAgreementPrepNounRule(messages),
 
         new MixedAlphabetsRule(messages),
 
         new SimpleReplaceRule(messages),
         new SimpleReplaceSoftRule(messages),
+        new SimpleReplaceRenamedRule(messages),
 
         new HiddenCharacterRule(messages)
     );

@@ -22,11 +22,11 @@ import org.languagetool.rules.AbstractCompoundRule;
 import org.languagetool.rules.CompoundRuleData;
 import org.languagetool.rules.Categories;
 import org.languagetool.rules.ITSIssueType;
+import org.languagetool.tools.Tools;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -54,16 +54,12 @@ public class PostReformPortugueseCompoundRule extends AbstractCompoundRule {
 
   @Override
   public String getDescription() {
-    return "Palavras compostas, por exemplo 'CD-ROM' em vez de 'CD ROM'";
+    return "Palavras compostas";
   }
 
   @Override
   public URL getUrl() {
-    try {
-      return new URL("https://pt.wikipedia.org/wiki/Lista_das_alterações_previstas_pelo_acordo_ortográfico_de_1990");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
+    return Tools.getUrl("https://pt.wikipedia.org/wiki/Lista_das_alterações_previstas_pelo_acordo_ortográfico_de_1990");
   }
 
   @Override

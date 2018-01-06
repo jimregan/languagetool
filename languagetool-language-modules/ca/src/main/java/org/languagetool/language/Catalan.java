@@ -38,6 +38,7 @@ import org.languagetool.rules.ca.ReflexiveVerbsRule;
 import org.languagetool.rules.ca.ReplaceOperationNamesRule;
 import org.languagetool.rules.ca.SimpleReplaceRule;
 import org.languagetool.rules.ca.SimpleReplaceBalearicRule;
+import org.languagetool.rules.ca.SimpleReplaceDNVRule;
 import org.languagetool.rules.ca.SimpleReplaceVerbsRule;
 import org.languagetool.synthesis.Synthesizer;
 import org.languagetool.synthesis.ca.CatalanSynthesizer;
@@ -88,10 +89,14 @@ public class Catalan extends Language {
   @Override
   public List<Rule> getRelevantRules(ResourceBundle messages) throws IOException {
     return Arrays.asList(
-            new CommaWhitespaceRule(messages),
+            new CommaWhitespaceRule(messages, 
+            		Example.wrong("A parer seu<marker> ,</marker> no era veritat."),
+            		Example.fixed("A parer seu<marker>,</marker> no era veritat.")),
             new DoublePunctuationRule(messages),
             new CatalanUnpairedBracketsRule(messages, this),
-            new UppercaseSentenceStartRule(messages, this),
+            new UppercaseSentenceStartRule(messages, this,
+            		Example.wrong("Preus de venda al públic. <marker>han</marker> pujat molt."),
+            		Example.fixed("Preus de venda al públic. <marker>Han</marker> pujat molt.")),
             new MultipleWhitespaceRule(messages, this),
             new LongSentenceRule(messages),
             // specific to Catalan:
@@ -103,17 +108,18 @@ public class Catalan extends Language {
             new ComplexAdjectiveConcordanceRule(messages),
             new CatalanWrongWordInContextRule(messages),
             new ReflexiveVerbsRule(messages),
-            new SimpleReplaceVerbsRule(messages),
+            new SimpleReplaceVerbsRule(messages, this),
             new SimpleReplaceBalearicRule(messages),
             new SimpleReplaceRule(messages),
-            new ReplaceOperationNamesRule(messages)
+            new ReplaceOperationNamesRule(messages, this),
+            new SimpleReplaceDNVRule(messages, this) // can be removed here after updating dictionaries
     );
   }
 
   @Override
   public Tagger getTagger() {
     if (tagger == null) {
-      tagger = new CatalanTagger();
+      tagger = new CatalanTagger(this);
     }
     return tagger;
   }
@@ -121,7 +127,7 @@ public class Catalan extends Language {
   @Override
   public Synthesizer getSynthesizer() {
     if (synthesizer == null) {
-      synthesizer = new CatalanSynthesizer();
+      synthesizer = new CatalanSynthesizer(this);
     }
     return synthesizer;
   }

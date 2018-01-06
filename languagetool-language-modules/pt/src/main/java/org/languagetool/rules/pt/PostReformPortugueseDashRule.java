@@ -22,9 +22,12 @@ package org.languagetool.rules.pt;
 import org.languagetool.Languages;
 import org.languagetool.rules.AbstractDashRule;
 import org.languagetool.rules.patterns.PatternRule;
+import org.languagetool.rules.Categories;
+import org.languagetool.rules.ITSIssueType;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Check for compounds written with dashes instead of hyphens.
@@ -37,7 +40,9 @@ public class PostReformPortugueseDashRule extends AbstractDashRule {
   
   public PostReformPortugueseDashRule() throws IOException {
     super(dashRules);
-    setDefaultOff(); // Slows down start up and checking time too much. See: http://forum.languagetool.org/t/checking-portuguese-slow/1669/10
+    // super.setCategory(Categories.TYPOGRAPHY.getCategory(messages));
+    setLocQualityIssueType(ITSIssueType.Typographical);
+    setDefaultOff(); //     Slows down start up and checking time too much. See 20170916: https://languagetool.org/regression-tests/performance-data.csv
   }
 
   @Override
@@ -47,7 +52,7 @@ public class PostReformPortugueseDashRule extends AbstractDashRule {
 
   @Override
   public String getDescription() {
-    return "Verifica se palavras hifenizadas foram escritas com travessões (p.ex., 'T — shirt' em vez de 'T-shirt').";
+    return "Travessões no lugar de hífens";
   }
 
 }

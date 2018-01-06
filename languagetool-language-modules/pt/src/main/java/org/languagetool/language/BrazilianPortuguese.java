@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.languagetool.rules.*;
+import org.languagetool.rules.pt.BrazilianPortugueseReplaceRule;
 import org.languagetool.rules.pt.PostReformPortugueseCompoundRule;
 import org.languagetool.rules.pt.PostReformPortugueseDashRule;
 
@@ -39,7 +40,8 @@ public class BrazilianPortuguese extends Portuguese {
     List<Rule> rules = new ArrayList<>();
     rules.addAll(super.getRelevantRules(messages));
     rules.add(new PostReformPortugueseCompoundRule(messages));
-    // rules.add(new PostReformPortugueseDashRule(messages));
+    rules.add(new BrazilianPortugueseReplaceRule(messages));
+    rules.add(new PostReformPortugueseDashRule());
     return rules;
   }
 
