@@ -7,3 +7,5 @@ impression=imprisean
 trampoline=trampailín
 bingo=biongó
 bear=béar
+wow=bhabh
+whoa=bhó
