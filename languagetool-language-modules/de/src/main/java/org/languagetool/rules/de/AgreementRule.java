@@ -291,6 +291,14 @@ public class AgreementRule extends Rule {
       tokenRegex("Managers?")
     ),
     Arrays.asList(
+      token("Private"),
+      tokenRegex("Equitys?")
+    ),
+    Arrays.asList(
+      token("Personal"),
+      tokenRegex("Agents?|Computers?|Data|Firewalls?")
+    ),
+    Arrays.asList(
       token("Junge"),
       tokenRegex("Union|Freiheit|Welt|Europäische|Alternative|Volkspartei|Akademie")
     ),

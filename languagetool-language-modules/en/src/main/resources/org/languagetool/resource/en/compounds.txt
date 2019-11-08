@@ -29,6 +29,7 @@ bottle-necks+
 breech-loader+
 cork-screw+
 cork-screws+
+Dev-Ops+
 die-hards+
 down-side+
 down-sides+
@@ -274,6 +275,8 @@ awe-inspiringly*
 # back-to-back* The two houses stand back to back. www.lexico.com/en/definition/back-to-back
 back-ups*
 bad-tempered*
+bad-mouthed*
+bad-mouthing*
 bandy-legged*
 bare-footed*
 bargain-basement*
@@ -529,6 +532,8 @@ ear-studs*
 earth-shattering*
 east-north-east*
 e-commerce*
+eco-friendly*
+eco-conscious*
 Editor-At-Large*
 elbow-work*
 empty-handed*
@@ -550,6 +555,8 @@ ex-students*
 extra-curricular*
 ex-wife*
 ex-wives*
+eye-catcher*
+eye-catchers*
 eye-opener*
 eye-openers*
 eye-opening*
@@ -1166,6 +1173,7 @@ pitch-and-toss*
 plain-spoken*
 play-offs*
 po-faced*
+pocket-size*
 point-blank*
 point-duty*
 point-to-point*
@@ -1345,6 +1353,7 @@ sang-froid*
 school-leaver*
 school-leavers*
 school-leaving*
+sci-fi*
 scot-free*
 seed-cord*
 seed-eater*
@@ -1403,6 +1412,8 @@ self-determination*
 self-determined*
 self-discipline*
 self-doubt*
+self-driven*
+self-driving*
 self-efficacy*
 self-effacing*
 self-employed*
@@ -1756,7 +1767,11 @@ two-tone*
 two-way*
 two-wheeler*
 two-wheelers*
+ultra-fast*
 ultra-high*
+ultra-left*
+ultra-right*
+ultra-thin*
 uncalled-for*
 under-rehearsed*
 under-represent*
@@ -3004,3 +3019,27 @@ wire-tapping
 wool-gathering
 wrong-footed
 wrong-headed
+Monte-Negro?
+Monte-negro?
+good-bye?
+good-byes?
+Good-bye?
+Good-byes?
+Good-Bye?
+Good-Byes?
+re-brand?
+re-brands?
+re-branded?
+re-branding?
+re-attend?
+re-attends?
+re-attended?
+re-attending?
+re-schedule?
+re-schedules?
+re-scheduled?
+re-scheduling?
+screen-shot?
+screen-shots?
+eco-system?
+eco-systems?

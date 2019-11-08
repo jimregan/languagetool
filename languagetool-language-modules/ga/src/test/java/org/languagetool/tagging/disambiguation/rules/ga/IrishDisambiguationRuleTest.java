@@ -26,7 +26,6 @@ import org.languagetool.TestTools;
 import org.languagetool.language.Irish;
 import org.languagetool.tagging.disambiguation.rules.XmlRuleDisambiguator;
 import org.languagetool.tagging.disambiguation.rules.DisambiguationRuleTest;
-import org.languagetool.tagging.disambiguation.xx.DemoDisambiguator;
 import org.languagetool.tagging.ga.IrishTagger;
 import org.languagetool.tokenizers.SRXSentenceTokenizer;
 import org.languagetool.tokenizers.SentenceTokenizer;
@@ -57,6 +56,9 @@ public class IrishDisambiguationRuleTest extends DisambiguationRuleTest {
                 tokenizer, sentenceTokenizer, tagger, disambiguator);
         TestTools.myAssert("á haistriú.",
                 "/[null]SENT_START á/[do]Prep:Poss:3P:Sg:Fem:Obj  /[null]null haistriú/[aistriú]Verbal:Noun:VTI:hPref ./[null]null",
+                tokenizer, sentenceTokenizer, tagger, disambiguator);
+        TestTools.myAssert("a haon",
+                "/[null]SENT_START a/[a]Part:Nm  /[null]null haon/[aon]Num:Card:hPref",
                 tokenizer, sentenceTokenizer, tagger, disambiguator);
     }
 

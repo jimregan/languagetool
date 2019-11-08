@@ -6334,3 +6334,5 @@ Gesichtsbücher/N
 Bettlacken/S
 Spannbettlacken/S
 Turmbeutel/S
+Nähkampf.*
+Harlekiniade/N

@@ -4642,10 +4642,15 @@ title="Easy editing stylesheet" ?>
           <token postag='SENT_START'/>
         <marker>
           <token min='2'>
-            <exception postag='V.+|UNKNOWN' postag_regexp='yes'/></token>
+            <exception postag='V.+|UNKNOWN' postag_regexp='yes'/>
+			<exception postag="NCFS000" regexp="yes">.+ção</exception>			
+		  </token>
           <token skip='-1'>
             <exception postag='V.+|UNKNOWN' postag_regexp='yes'/>
-            <exception scope="next" postag='V.+|UNKNOWN' postag_regexp='yes'/></token>
+            <exception scope="next" postag='V.+|UNKNOWN' postag_regexp='yes'/>
+			<exception postag="NCFS000" regexp="yes">.+ção</exception>
+			<exception scope="next" postag="NCFS000" regexp="yes">.+ção</exception>
+		  </token>
         <and>
           <token regexp='yes'>[.?!…”»]|&quot;</token>
           <token postag='SENT_END'/>
@@ -4660,7 +4665,7 @@ title="Easy editing stylesheet" ?>
       <example type="correct"><marker>Isto é um exemplo.</marker></example>
       <example><marker>Isto -  Um exemplo</marker></example><!-- XXX Possível título -->
       <example>Tem marcação com o Dr. Mário?</example>
-      <example type="incorrect"><marker>Não marcação com o Dr. Mário.</marker></example>
+    <!--      <example type="incorrect"><marker>Não marcação com o Dr. Mário.</marker></example>-->
       <example type="correct">Não tem marcação com o Dr. Mário.</example>
       <example>Temos muito tempo.</example>
       <example>Sim, senhor.</example>
@@ -5737,6 +5742,22 @@ title="Easy editing stylesheet" ?>
       <message>Esta palavra é referida no singular.</message>
         <suggestion>ensino superior</suggestion>
       <example correction="ensino superior">Temos instituições de <marker>ensinos superiores</marker> muito prestigiadas.</example>
+    </rule>
+
+    <rule id='ESQUECER_VERB' name="esquecer de">
+    <!--      Created by Marco A.G.Pinto, Portuguese rule      -->
+      <pattern>
+		<marker>
+          <token inflected='yes'>esquecer</token>
+		</marker>
+		<token postag_regexp='yes' postag='V.+'>
+			<exception regexp="yes">antes|deste|disto</exception>
+			<exception postag_regexp="yes" postag='VMIP3S0|VMIM3S0'></exception>
+		</token>
+      </pattern>
+      <message>Insira a preposição 'de' após o verbo.</message>
+       <suggestion>\1 de</suggestion>
+      <example correction="esquecer de">Não vou <marker>esquecer</marker> limpar a cozinha.</example>
     </rule>
 
     <rule id='ESTAR_BOM_NA_VIDA' name="Estar bem na vida">
@@ -7188,6 +7209,30 @@ title="Easy editing stylesheet" ?>
       <example correction="terá lugar">O evento <marker>tomará lugar</marker> em Lisboa.</example>
     </rule>
 
+    <rule id='TORNAR_MAIS_DIFICIL' name="Dificultar">
+    <!--      Created by Marco A.G.Pinto, Portuguese rule      -->
+      <pattern>
+          <token inflected='yes'>tornar</token>
+		  <token>mais</token>
+		  <token>difícil</token>
+      </pattern>
+      <message>Substitua por <match no='1' postag='V.+' postag_regexp='yes'>dificultar</match>.</message>
+        <suggestion><match no='1' postag='V.+' postag_regexp='yes'>dificultar</match></suggestion>
+      <example correction="dificultar">As regras vão <marker>tornar mais difícil</marker> o jogo.</example>
+    </rule>
+
+    <rule id='TORNAR_MAIS_FACIL' name="Facilitar">
+    <!--      Created by Marco A.G.Pinto, Portuguese rule      -->
+      <pattern>
+          <token inflected='yes'>tornar</token>
+		  <token>mais</token>
+		  <token>fácil</token>
+      </pattern>
+      <message>Substitua por <match no='1' postag='V.+' postag_regexp='yes'>facilitar</match>.</message>
+        <suggestion><match no='1' postag='V.+' postag_regexp='yes'>facilitar</match></suggestion>
+      <example correction="facilitar">As regras vão <marker>tornar mais fácil</marker> o jogo.</example>
+    </rule>
+	
     <rule id='TRABALHO_PAGO' name="trabalho remunerado">
     <!--      Created by Marco A.G.Pinto, Portuguese rule      -->
       <pattern>
@@ -25187,25 +25232,27 @@ TODO Write better examples
       <example>1 = 1</example>
       <example correction="≥|≧">1 <marker>&gt;=</marker> 0</example>
     </rule>
-    <!--rule> FIXME &lt; sequence is not being properly escaped. Verify interpreter.
+    <rule>
       <pattern>
-          <token>&lt;</token>
-          <token>=</token>
-          <token negate="yes">></token>
+          <marker>
+            <token>&lt;</token>
+            <token spacebefore="no">=</token>
+          </marker>
+          <token negate="yes">&gt;</token>
       </pattern>
       <message>Prefira o símbolo tipográfico.</message>
         <suggestion>≤</suggestion>
         <suggestion>≦</suggestion>
       <example>1 ≤ 3</example>
-      <example type="incorrect">1 <marker>&gt;=</marker> 3</example>
-            </rule-->
+      <example correction="≤|≦">1 <marker>&lt;=</marker> 3</example>
+    </rule>
   </rulegroup>
 
   <rulegroup id="ARROWS" name="Setas: -&gt; (→)">
     <!-- Localized from German grammar.xml, by Tiago F. Santos, 2017-07-07 -->
     <rule>
       <pattern>
-          <token negate="yes">&lt;</token>
+        <token negate="yes">&lt;</token>
         <marker>
           <token regexp="yes">(?:\-|=){1,2}</token>
           <token>&gt;</token>
@@ -25221,13 +25268,13 @@ TODO Write better examples
         <suggestion>⇛</suggestion>
       <example correction="≥|→|⇾|⇉|⇒|⇨|⇛"><marker>-&gt;</marker> Ponto 1</example>
     </rule>
-    <!--rule> FIXME &lt; equence is not being properly escaped. Verify interpreter.
+    <rule>
       <pattern>
         <marker>
           <token>&lt;</token>
-          <token regexp="yes">(?:\-|=){1,2}</token>
+          <token spacebefore="no" regexp="yes">(?:\-|=){1,2}</token>
         </marker>
-          <token negate="yes">&gt;</token>
+        <token negate="yes">&gt;</token>
       </pattern>
       <message>Pretende utilizar uma seta?</message>
         <suggestion>≤</suggestion>
@@ -25238,7 +25285,8 @@ TODO Write better examples
         <suggestion>⇦</suggestion>
         <suggestion>⇚</suggestion>
       <example correction="≤|←|⇽|⇇|⇐|⇦|⇚">A <marker>&lt;-</marker> B</example>
-      <example >A ← B</example>
+      <example>A ← B</example>
+      <example>-128 &lt; -127 &lt; -126</example>
     </rule>
     <rule>
       <pattern>
@@ -25256,7 +25304,7 @@ TODO Write better examples
         <suggestion>⇔</suggestion>
       <example correction="↔|⇿|⇄|⇆|⇋|⇌|⇔">A <marker>&lt;=></marker> B</example>
       <example>A ⇔ B</example>
-            </rule-->
+    </rule>
   </rulegroup>
 
   <rulegroup id='YEAR_NUMBER_FORMAT' name="Formatação de números: anos">

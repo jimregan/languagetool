@@ -2642,6 +2642,12 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
            <token chunk="E-NP-plural" postag="NNS"/>
            <token regexp="yes">are|were</token>
        </antipattern>
+       <antipattern><!-- Whatever was said showed  -->
+           <token postag="WP"/>
+           <token>was</token>
+           <token postag="VBN"/>
+           <token postag="VBD"/>
+       </antipattern>
         <pattern>
             <marker>
                 <token postag="VBN"><exception regexp="yes">been|had|got</exception></token>
@@ -2655,6 +2661,7 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
         <example type="untouched">... and they just <marker>got</marker> carried away.</example>
         <example type="untouched">He <marker>looked</marker> tired then.</example>
         <example type="untouched">Verb. ... of the World War I era that <marker>succeeded</marker> armored cruisers were now classified...</example>
+        <example type="untouched">Passive voice verb. Whatever was <marker>said</marker> showed great insight.</example>
     </rule>
     <rule name="of + VBN + JJ -&gt; JJ" id="OF_VBN_JJ">
         <pattern>
@@ -5427,6 +5434,18 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
       <disambig action="replace"><wd pos="NNP"/><wd pos="NNP"/></disambig>
     </rule>
 
+    <rule name="Proper noun: U.S. Highway 101" id="US_HIGHWAY_101"><!-- #2077, https://en.wikipedia.org/wiki/U.S._Route_101 -->
+      <pattern case_sensitive="yes">
+          <token>U</token>
+          <token spacebefore="no">.</token>
+          <token spacebefore="no">S</token>
+          <token spacebefore="no">.</token>
+          <token regexp="yes">Route|Highway</token>
+          <token>101</token><!-- Possibly use postag CD. The safe option is to add the known correct numbers -->
+      </pattern>
+      <disambig action="replace"><wd pos="NNP"/><wd pos="NNP"/><wd pos="NNP"/><wd pos="NNP"/><wd pos="NNP"/><wd pos="NNP"/></disambig>
+    </rule>
+
     <rule name="NN: Enter Key" id="ENTER_KEY">
       <pattern>
           <marker>
@@ -5466,9 +5485,9 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
     <rule id="IGNORE_SPELLING_OF_CIUDAD_DE" name="Ignore spelling of Mexican city names starting with 'Ciudad de'">
         <pattern case_sensitive="yes">
             <marker>
-                <token regexp="yes">Ciudad|Playa|Casa|Puerto</token>
+                <token regexp="yes">Ciudad|Playa|Casa|Puerto|Avenida|Santiago|Municipio|Paseo|Calle</token>
                 <token>de</token>
-                <token regexp="yes" min="0">[Ll]a</token>
+                <token regexp="yes" min="0">[Ll]a|[Ll][eoa]s</token>
             </marker>
             <token regexp="yes">[A-Z].+</token>
         </pattern>
@@ -5478,8 +5497,8 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
     <rule id="IGNORE_SPELLING_OF_CIUDAD" name="Ignore spelling of Mexican city names starting with 'Ciudad del'">
         <pattern case_sensitive="yes">
             <marker>
-                <token regexp="yes">Ciudad|Playa|Casa|Puerto</token>
-                <token>del</token>
+                <token regexp="yes">Ciudad|Playa|Casa|Puerto|Avenida|Santiago|Municipio|Paseo|Calle</token>
+                <token regexp="yes">[Dd]el</token>
             </marker>
             <token regexp="yes">[A-Z].+</token>
         </pattern>
@@ -6341,16 +6360,16 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
             <disambig action="replace"><wd pos="JJ"/><wd pos="JJ"/><wd pos="JJ"/></disambig>
         </rule>
 
-        <rule id="IDEÉ_FIXE" name="ideé fixe">
+        <rule id="IDÉE_FIXE" name="idée fixe">
             <pattern>
-                <token>ideé</token>
+                <token>idée</token>
                 <token>fixe</token>
             </pattern>
             <disambig action="replace"><wd pos="NN"/><wd pos="NN"/></disambig>
         </rule>
-        <rule id="IDEÉS_FIXES" name="ideés fixes">
+        <rule id="IDÉES_FIXES" name="idées fixes">
             <pattern>
-                <token>ideés</token>
+                <token>idées</token>
                 <token>fixes</token>
             </pattern>
             <disambig action="replace"><wd pos="NNS"/><wd pos="NNS"/></disambig>

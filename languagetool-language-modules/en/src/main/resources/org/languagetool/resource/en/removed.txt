@@ -52,6 +52,7 @@ curling	curling	NNS
 damp	damp	VBG
 dangling	dangling	NNS
 defuelling	defuelling	NNS
+dilly-dally	dilly-dally	RB
 divers	divers	DT
 DO	DO	NNP
 dumpling	dumpling	NNS
@@ -83,6 +84,7 @@ gentle	gentle	VBG
 gonna	go	VBG
 googling	googling	NN
 googling	googling	NNS
+graphemic	graphemic	NN
 handling	handling	NNS
 header	head	JJR
 high-quality	high-quality	NN:UN
@@ -116,6 +118,7 @@ milling	milling	NNS
 mineralisation	mineralization	NNS
 mingling	mingling	NNS
 mislabelling	mislabelling	NNS
+mute	mute	VBG
 ne	ne	NN
 negative	negative	VBG
 numbers	numbers	NN
@@ -130,6 +133,10 @@ parenthesises	parenthesis	NNS
 personnels	personnel	NNS
 pies	pi	NNS
 pooling	pooling	NNS
+précised	précise	VBD
+précised	précise	VBN
+précises	précise	VBZ
+précising	précise	VBG
 pressurisation	pressurization	NNS
 prickly	prickly	RB
 propelling	propelling	NNS

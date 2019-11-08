@@ -321,8 +321,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     putRepl("[wW]ienerschnitzel[ns]?", "[wW]ieners", "Wiener S");
     putRepl("[sS]chwarzwälderkirschtorten?", "[sS]chwarzwälderk", "Schwarzwälder K");
     putRepl("[kK]oxial(e[nmrs]?)?", "x", "ax");
-    putRepl("([üÜ]ber|[uU]unter)durs?chnitt?lich(e[nmrs]?)?", "s?chnitt?", "chschnitt");
-    putRepl("[dD]urs?chnitt?lich(e[nmrs]?)?", "s?chnitt?", "chschnitt");
+    putRepl("([üÜ]ber|[uU]unter)?[dD]urs?chnitt?lich(e[nmrs]?)?", "s?chnitt?", "chschnitt");
     putRepl("[dD]urs?chnitts?", "s?chnitt", "chschnitt");
     putRepl("[sS]triktlich(e[mnrs]?)?", "lich", "");
     putRepl("[hH]öchstwahrlich(e[mnrs]?)?", "wahr", "wahrschein");
@@ -334,6 +333,8 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     putRepl("[gG]ewohnheitsbedürftig(e[mnrs]?)?", "wohnheit", "wöhnung");
     putRepl("[eE]infühlungsvoll(e[mnrs]?)?", "fühlungsvoll", "fühlsam");
     putRepl("[vV]erwant(e[mnrs]?)?", "want", "wandt");
+    putRepl("[bB]eanstandigung(en)?", "ig", "");
+    putRepl("[eE]inba(hn|nd)frei(e[mnrs]?)?", "ba(hn|nd)", "wand");
     putRepl("[äÄaAeE]rtzten?", "[äÄaAeE]rt", "Är");
     putRepl("pdf-Datei(en)?", "pdf", "PDF");
     putRepl("rumänern?", "rumäner", "Rumäne");
@@ -375,6 +376,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("Matrikelnr.", "Matrikel-Nr.");
     put("Rekrutings?prozess", "Recruitingprozess");
     put("sumarum", "summarum");
+    put("schein", "scheine");
     put("Innzahlung", w -> Arrays.asList("In Zahlung", "in Zahlung"));
     put("änderen", w -> Arrays.asList("ändern", "anderen"));
     put("wanderen", w -> Arrays.asList("wandern", "Wanderern"));
@@ -1021,12 +1023,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
   private boolean isNoun(String word) {
     try {
       List<AnalyzedTokenReadings> readings = tagger.tag(Collections.singletonList(word));
-      for (AnalyzedTokenReadings atr : readings) {
-        if (atr.hasPosTagStartingWith("SUB:")) {
-          return true;
-        }
-      }
-      return false;
+      return readings.stream().anyMatch(reading -> reading.hasPosTagStartingWith("SUB"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

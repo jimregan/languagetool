@@ -276,11 +276,13 @@ public class English extends Language implements AutoCloseable {
       case "LIGATURES":                 return 1;   // prefer over spell checker
       case "APPSTORE":                  return 1;   // prefer over spell checker
       case "DONT_T":                    return 1;   // prefer over EN_CONTRACTION_SPELLING
+      case "WHATS_APP":                 return 1;   // prefer over EN_CONTRACTION_SPELLING
       case "PROFANITY":                 return 5;   // prefer over spell checker
       case "RUDE_SARCASTIC":            return 6;   // prefer over spell checker
       case "CHILDISH_LANGUAGE":         return 8;   // prefer over spell checker
       case "EN_DIACRITICS_REPLACE":     return 9;   // prefer over spell checker
       case "DT_JJ_NO_NOUN":             return -1;  // prefer other more specific rules (e.g. THIRD_PARTY)
+      case "AGREEMENT_SENT_START":      return -1;  // prefer other more specific rules
       case "HAVE_PART_AGREEMENT":       return -1;  // prefer other more specific rules
       case "BEEN_PART_AGREEMENT":       return -1;  // prefer other more specific rules (e.g. VARY_VERY)
       case "PREPOSITION_VERB":          return -1;  // prefer other more specific rules

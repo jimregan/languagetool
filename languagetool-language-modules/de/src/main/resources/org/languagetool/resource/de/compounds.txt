@@ -37,6 +37,8 @@ Bachelor-Studiengängen$
 Bachelor-Studiengangs$
 Back-up
 Back-ups
+Batch-Processing$
+Batch-Processings$
 Bermuda-Dreieck$
 Bermuda-Dreiecks$
 Bestseller-Roman$
@@ -48,6 +50,9 @@ Bowie-Messern$
 Bowie-Messers$
 Burn-out
 Burn-outs
+Call-Center$
+Call-Centers$
+Call-Centern$
 Cash-flow
 Cash-flows
 Chagas-Krankheit$
@@ -57,6 +62,12 @@ Cliff-hangers
 Code-switching
 Code-switchings
 Datei-Manager$
+Day-Trader$
+Day-Traderin$
+Day-Traderinnen$
+Day-Traders$
+Day-Trading$
+Day-Tradings$
 Diplom-Betriebswirt$
 Diplom-Betriebswirte$
 Diplom-Betriebswirten$
@@ -2280,6 +2291,8 @@ En-bloc-Abstimmung*
 En-bloc-Abstimmungen*
 En-bloc-Annahme*
 En-bloc-Annahmen*
+Energy-Drink*
+Energy-Drinks*
 # TODO - make case-sensitive
 #Entweder-oder*
 Entweder-oders*
@@ -3994,6 +4007,9 @@ Snail-Mail*
 Snail-Mails*
 Soap-Opera*
 Soap-Operas*
+Social-Media-Kanal*
+Social-Media-Kanals*
+Social-Media-Kanäle*
 Social-Media-Marketing*
 Social-Media-Marketings*
 Soft-Eis*
@@ -4404,6 +4420,8 @@ V-Waffe*
 V-Waffen*
 V-Zeichen*
 V-Zeichens*
+Venture-Capital$
+Venture-Capitals$
 Waffen-SS*
 Wagenfeld-Neustadt*
 Wagenfeld-Neustadts*

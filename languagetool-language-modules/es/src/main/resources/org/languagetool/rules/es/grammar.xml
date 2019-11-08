@@ -539,6 +539,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <example>Esta es preciosa.</example>
             </rule>
         </rulegroup>
+        <rule id="ESTAS_TILDE" name="estas/estás">
+            <antipattern>
+                <token>estas</token>
+                <token min="1" max="4" postag="R.|A.*|V.P.*" postag_regexp="yes"/>
+                <token postag="V.[MSI].*" postag_regexp="yes"/>
+            </antipattern>
+            <antipattern>
+                <token postag="SPS00"/>
+                <token>estas</token>
+            </antipattern>
+            <pattern>
+                <marker>
+                    <token>estas</token>
+                </marker>
+                <token postag="RG|A.*|V.P.*" postag_regexp="yes"><exception postag="A..[FC][PN].*|V.P..PF" postag_regexp="yes"/></token>
+            </pattern>
+            <message>Si es del verbo 'estar', lleva tilde.</message>
+            <suggestion>estás</suggestion>
+            <example correction="Estás">¿<marker>Estas</marker> bien?</example>
+            <example correction="estás">Ahora <marker>estas</marker> cansado.</example>
+            <example>Alguien desordena estas rosas.</example>
+            <example>Estas características añadidas son:</example>
+            <example>Estas ahora no están.</example>
+            <example>Estas troncales son.</example>
+            <example>La acción de estas característica.</example>
+        </rule>
         <rulegroup id="VERBO_TILDE" name="Verbos con o sin tilde">
             <short>El verbo lleva tilde.</short>
             <!-- LO_SE lo sé-->
@@ -2093,13 +2119,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <suggestion>⇛</suggestion>
       <example correction="≥|→|⇾|⇉|⇒|⇨|⇛"><marker>-&gt;</marker> Punto 1</example>
     </rule>
-    <!--rule> FIXME &lt; equence is not being properly escaped. Verify interpreter.
+    <rule>
+      <antipattern>
+        <token>&lt;</token>
+        <token regexp="yes">\-|=</token>
+        <token>&gt;</token>
+      </antipattern>
       <pattern>
         <marker>
           <token>&lt;</token>
-          <token regexp="yes">(?:\-|=){1,2}</token>
+          <token spacebefore="no" regexp="yes">(?:\-|=){1,2}</token>
         </marker>
-          <token negate="yes">&gt;</token>
+        <token/>
       </pattern>
       <message>¿Desea utilizar una flecha?</message>
         <suggestion>≤</suggestion>
@@ -2111,12 +2142,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <suggestion>⇚</suggestion>
       <example correction="≤|←|⇽|⇇|⇐|⇦|⇚">A <marker>&lt;-</marker> B</example>
       <example >A ← B</example>
+      <example>-128 &lt; -127 &lt; -126</example>
     </rule>
     <rule>
       <pattern>
           <token>&lt;</token>
-          <token regexp="yes">\-|=</token>
-          <token>&gt;</token>
+          <token spacebefore="no" regexp="yes">\-|=</token>
+          <token spacebefore="no">&gt;</token>
       </pattern>
       <message>¿Desea utilizar una flecha?</message>
         <suggestion>↔</suggestion>
@@ -2128,7 +2160,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <suggestion>⇔</suggestion>
       <example correction="↔|⇿|⇄|⇆|⇋|⇌|⇔">A <marker>&lt;=></marker> B</example>
       <example>A ⇔ B</example>
-            </rule-->
+    </rule>
   </rulegroup>
  </category>
 </rules>
