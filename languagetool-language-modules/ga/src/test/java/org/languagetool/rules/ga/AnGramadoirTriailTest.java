@@ -69,11 +69,11 @@ public class AnGramadoirTriailTest {
       System.err.println(te.getContext());
       List<RuleMatch> matches = langTool.check(te.getContext());
       for(RuleMatch match : matches) {
-        if(match.getFromPos() == te.getContextOffset() && match.getToPos() == te.getErrorLength()) {
+        if(match.getFromPos() >= te.getContextOffset() && match.getToPos() <= te.getErrorLength()) {
           nummatches++;
         }
       }
     }
-    //assertEquals(numerrors, nummatches);
+    assertEquals(numerrors, nummatches);
   }
 }
