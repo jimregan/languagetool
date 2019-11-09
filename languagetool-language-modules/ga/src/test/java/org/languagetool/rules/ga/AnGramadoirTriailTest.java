@@ -68,6 +68,10 @@ public class AnGramadoirTriailTest {
       numerrors++;
       System.err.println(te.getContext());
       List<RuleMatch> matches = langTool.check(te.getContext());
+      if(matches.isEmpty() && te.getRuleID().equals("Lingua::GA::Gramadoir/GRAM{^OK}")) {
+        nummatches++;
+        continue;
+      }
       for(RuleMatch match : matches) {
         if(match.getFromPos() >= te.getContextOffset() && match.getToPos() <= te.getErrorLength()) {
           nummatches++;
