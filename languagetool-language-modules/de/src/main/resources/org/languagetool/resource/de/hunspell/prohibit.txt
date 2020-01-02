@@ -6336,3 +6336,15 @@ Spannbettlacken/S
 Turmbeutel/S
 Nähkampf.*
 Harlekiniade/N
+Nestle # Nestlé
+nestle
+.*schreibwaise
+.*schreibwaisen
+Profikamp
+Konfrontationskur
+Bilderrahm/S
+Kreislaus
+Kreisläuse/N
+Busgelder
+Fließdecke/N
+Fließjacke/N

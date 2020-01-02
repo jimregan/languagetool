@@ -29,8 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.languagetool.AnalyzedSentence;
 import org.languagetool.JLanguageTool;
+import org.languagetool.Languages;
 import org.languagetool.TestTools;
-import org.languagetool.language.GermanyGerman;
+import org.languagetool.language.German;
 
 public class CaseRuleTest {
 
@@ -39,13 +40,13 @@ public class CaseRuleTest {
 
   @Before
   public void setUp() {
-    rule = new CaseRule(TestTools.getMessages("de"), new GermanyGerman());
-    lt = new JLanguageTool(new GermanyGerman());
+    rule = new CaseRule(TestTools.getMessages("de"), (German) Languages.getLanguageForShortCode("de-DE"));
+    lt = new JLanguageTool(Languages.getLanguageForShortCode("de-DE"));
   }
 
   @Test
   public void testRuleActivation() {
-    assertTrue(rule.supportsLanguage(new GermanyGerman()));
+    assertTrue(rule.supportsLanguage(Languages.getLanguageForShortCode("de-DE")));
   }
 
   @Test
@@ -55,6 +56,7 @@ public class CaseRuleTest {
     assertGood("Das ist eine Abkehr von Gottes Geboten.");
     assertGood("Dem Hund Futter geben");
     assertGood("Heute spricht Frau Stieg.");
+    assertGood("So könnte es auch den Handwerksbetrieben gehen, die ausbilden und deren Ausbildung dann Industriebetrieben zugutekäme.");
     assertGood("Die Firma Drosch hat nicht pünktlich geliefert.");
     assertGood("3.1 Technische Dokumentation");
     assertGood("Ein einfacher Satz zum Testen.");
@@ -62,6 +64,7 @@ public class CaseRuleTest {
     assertGood("Das Winseln stört.");
     assertGood("Das schlägt nicht so zu Buche.");
     assertGood("Dirk Hetzel ist ein Name.");
+    assertGood("Aber sie tat es, sodass unsere Klasse das sehen und fotografieren konnte.");
     assertGood("Sein Verhalten war okay.");
     assertGood("Hier ein Satz. \"Ein Zitat.\"");
     assertGood("Hier ein Satz. 'Ein Zitat.'");
@@ -114,6 +117,7 @@ public class CaseRuleTest {
     assertGood("Du kannst das machen.");
     assertGood("Vor dem Aus stehen.");
     assertGood("Ich Armer!");
+    assertGood("Hallo Malte,");
     assertGood("Parks Vertraute Choi Soon Sil ist zu drei Jahren Haft verurteilt worden.");
     assertGood("Bei einer Veranstaltung Rechtsextremer passierte es.");
     assertGood("Eine Gruppe Betrunkener singt.");

@@ -30,11 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
-import org.languagetool.AnalyzedSentence;
-import org.languagetool.AnalyzedTokenReadings;
-import org.languagetool.JLanguageTool;
-import org.languagetool.Language;
-import org.languagetool.UserConfig;
+import org.languagetool.*;
 import org.languagetool.languagemodel.LanguageModel;
 import org.languagetool.rules.Categories;
 import org.languagetool.rules.ITSIssueType;
@@ -45,6 +41,8 @@ import org.languagetool.rules.spelling.suggestions.SuggestionsOrderer;
 import org.languagetool.rules.spelling.suggestions.SuggestionsOrdererFeatureExtractor;
 import org.languagetool.rules.spelling.suggestions.XGBoostSuggestionsOrderer;
 import org.languagetool.tools.Tools;
+
+import static org.languagetool.JLanguageTool.*;
 
 public abstract class MorfologikSpellerRule extends SpellingCheckRule {
 
@@ -123,20 +121,7 @@ public abstract class MorfologikSpellerRule extends SpellingCheckRule {
   public RuleMatch[] match(AnalyzedSentence sentence) throws IOException {
     List<RuleMatch> ruleMatches = new ArrayList<>();
     AnalyzedTokenReadings[] tokens = getSentenceWithImmunization(sentence).getTokensWithoutWhitespace();
-    //lazy init
-    if (speller1 == null) {
-      String binaryDict = null;
-      if (JLanguageTool.getDataBroker().resourceExists(getFileName()) || Paths.get(getFileName()).toFile().exists()) {
-        binaryDict = getFileName();
-      }
-      if (binaryDict != null) {
-        initSpeller(binaryDict);
-      } else {
-        // should not happen, as we only configure this rule (or rather its subclasses)
-        // when we have the resources:
-        return toRuleMatchArray(ruleMatches);
-      }
-    }
+    if (initSpellers()) return toRuleMatchArray(ruleMatches);
     int idx = -1;
     for (AnalyzedTokenReadings token : tokens) {
       idx++;
@@ -174,7 +159,7 @@ public abstract class MorfologikSpellerRule extends SpellingCheckRule {
             if( token.getEndPos() < ruleMatch.getToPos() ) // done by multi-token speller, no need to adjust
               continue;
 
-            ruleMatch.setOffsetPosition(ruleMatch.getFromPos(), ruleMatch.getToPos()+hiddenCharOffset);
+            ruleMatch.setOffsetPosition(ruleMatch.getFromPos(), ruleMatch.getToPos()+hiddenCharOffset, ruleMatch);
           }
         }
       }
@@ -184,18 +169,40 @@ public abstract class MorfologikSpellerRule extends SpellingCheckRule {
     return toRuleMatchArray(ruleMatches);
   }
 
-  private void initSpeller(String binaryDict) throws IOException {
-    String plainTextDict = null;
-    String languageVariantPlainTextDict = null;
-    if (getSpellingFileName() != null && JLanguageTool.getDataBroker().resourceExists(getSpellingFileName())) {
-      plainTextDict = getSpellingFileName();
+  private boolean initSpellers() throws IOException {
+    if (speller1 == null) {
+      String binaryDict = null;
+      if (getDataBroker().resourceExists(getFileName()) || Paths.get(getFileName()).toFile().exists()) {
+        binaryDict = getFileName();
+      }
+      if (binaryDict != null) {
+        initSpeller(binaryDict);
+      } else {
+        // should not happen, as we only configure this rule (or rather its subclasses)
+        // when we have the resources:
+        return true;
+      }
     }
-    if (getLanguageVariantSpellingFileName() != null && JLanguageTool.getDataBroker().resourceExists(getLanguageVariantSpellingFileName())) {
+    return false;
+  }
+
+  private void initSpeller(String binaryDict) throws IOException {
+    List<String> plainTextDicts = new ArrayList<>();
+    String languageVariantPlainTextDict = null;
+    if (getSpellingFileName() != null && getDataBroker().resourceExists(getSpellingFileName())) {
+      plainTextDicts.add(getSpellingFileName());
+    }
+    for (String fileName : getAdditionalSpellingFileNames()) {
+      if (getDataBroker().resourceExists(fileName)) {
+        plainTextDicts.add(fileName);
+      }
+    }
+    if (getLanguageVariantSpellingFileName() != null && getDataBroker().resourceExists(getLanguageVariantSpellingFileName())) {
       languageVariantPlainTextDict = getLanguageVariantSpellingFileName();
     }
-    speller1 = new MorfologikMultiSpeller(binaryDict, plainTextDict, languageVariantPlainTextDict, userConfig, 1);
-    speller2 = new MorfologikMultiSpeller(binaryDict, plainTextDict, languageVariantPlainTextDict, userConfig, 2);
-    speller3 = new MorfologikMultiSpeller(binaryDict, plainTextDict, languageVariantPlainTextDict, userConfig, 3);
+    speller1 = new MorfologikMultiSpeller(binaryDict, plainTextDicts, languageVariantPlainTextDict, userConfig, 1);
+    speller2 = new MorfologikMultiSpeller(binaryDict, plainTextDicts, languageVariantPlainTextDict, userConfig, 2);
+    speller3 = new MorfologikMultiSpeller(binaryDict, plainTextDicts, languageVariantPlainTextDict, userConfig, 3);
     setConvertsCase(speller1.convertsCase());
   }
 
@@ -210,6 +217,16 @@ public abstract class MorfologikSpellerRule extends SpellingCheckRule {
   }
 
 
+  /**
+   * @since 4.8
+   */
+  @Experimental
+  @Override
+  public boolean isMisspelled(String word) throws IOException {
+    initSpellers();
+    return isMisspelled(speller1, word);
+  }
+  
   /**
    * @return true if the word is misspelled
    * @since 2.4

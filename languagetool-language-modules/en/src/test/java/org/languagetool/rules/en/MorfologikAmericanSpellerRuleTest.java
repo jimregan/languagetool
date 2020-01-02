@@ -20,10 +20,7 @@ package org.languagetool.rules.en;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.languagetool.JLanguageTool;
-import org.languagetool.Language;
-import org.languagetool.TestTools;
-import org.languagetool.UserConfig;
+import org.languagetool.*;
 import org.languagetool.language.AmericanEnglish;
 import org.languagetool.language.CanadianEnglish;
 import org.languagetool.rules.Rule;
@@ -36,12 +33,11 @@ import java.util.List;
 import static java.util.Collections.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRuleTest {
 
-  private static final AmericanEnglish language = new AmericanEnglish();
+  private static final Language language = Languages.getLanguageForShortCode("en-US");
   
   private static MorfologikAmericanSpellerRule rule;
   private static JLanguageTool lt;
@@ -59,14 +55,14 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
 
   @Test
   public void testSuggestions() throws IOException {
-    Language language = new AmericanEnglish();
+    Language language = Languages.getLanguageForShortCode("en-US");
     Rule rule = new MorfologikAmericanSpellerRule(TestTools.getMessages("en"), language);
     super.testNonVariantSpecificSuggestions(rule, language);
   }
 
   @Test
   public void testVariantMessages() throws IOException {
-    Language language = new AmericanEnglish();
+    Language language = Languages.getLanguageForShortCode("en-US");
     Rule rule = new MorfologikAmericanSpellerRule(TestTools.getMessages("en"), language);
     RuleMatch[] matches = rule.match(lt.getAnalyzedSentence("This is a nice colour."));
     assertEquals(1, matches.length);
@@ -75,7 +71,7 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
 
   @Test
   public void testUserDict() throws IOException {
-    Language language = new AmericanEnglish();
+    Language language = Languages.getLanguageForShortCode("en-US");
     UserConfig userConfig = new UserConfig(Arrays.asList("mytestword", "mytesttwo"));
     Rule rule = new MorfologikAmericanSpellerRule(TestTools.getMessages("en"), language, userConfig, emptyList());
     assertEquals(0, rule.match(lt.getAnalyzedSentence("mytestword")).length);
@@ -102,6 +98,7 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
     assertEquals(0, rule.match(lt.getAnalyzedSentence("123454")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("I like my emoji 😾")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("μ")).length);
+    assertEquals(0, rule.match(lt.getAnalyzedSentence("I like my emoji ❤️")).length);
 
     // test words in language-specific spelling_en-US.txt
     assertEquals(0, rule.match(lt.getAnalyzedSentence("USTestWordToBeIgnored")).length);
@@ -160,8 +157,9 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
 
   @Test
   public void testRuleWithWrongSplit() throws Exception {
-    MorfologikAmericanSpellerRule rule = new MorfologikAmericanSpellerRule(TestTools.getMessages("en"), new AmericanEnglish());
-    JLanguageTool lt = new JLanguageTool(new AmericanEnglish());
+    Language lang = Languages.getLanguageForShortCode("en-US");
+    MorfologikAmericanSpellerRule rule = new MorfologikAmericanSpellerRule(TestTools.getMessages("en"), lang);
+    JLanguageTool lt = new JLanguageTool(lang);
     
     RuleMatch[] matches1 = rule.match(lt.getAnalyzedSentence("But than kyou for the feedback"));
     assertThat(matches1.length, is(1));
@@ -289,6 +287,18 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
     assertSuggestion("CATestWordToBeIgnore", "USTestWordToBeIgnored");  // test again because of caching
   }
 
+  @Test
+  public void testIsMisspelled() throws IOException {
+    assertTrue(rule.isMisspelled("sdadsadas"));
+    assertTrue(rule.isMisspelled("bicylce"));
+    assertTrue(rule.isMisspelled("tabble"));
+    assertTrue(rule.isMisspelled("tabbles"));
+
+    assertFalse(rule.isMisspelled("bicycle"));
+    assertFalse(rule.isMisspelled("table"));
+    assertFalse(rule.isMisspelled("tables"));
+  }
+  
   private void assertSuggestion(String input, String... expectedSuggestions) throws IOException {
     assertSuggestion(input, rule, lt, expectedSuggestions);
   }

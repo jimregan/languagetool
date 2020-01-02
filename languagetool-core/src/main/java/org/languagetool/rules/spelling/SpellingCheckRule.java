@@ -73,12 +73,14 @@ public abstract class SpellingCheckRule extends Rule {
 
   private static final String SPELLING_IGNORE_FILE = "/hunspell/ignore.txt";
   private static final String SPELLING_FILE = "/hunspell/spelling.txt";
+  private static final String CUSTOM_SPELLING_FILE = "/hunspell/spelling_custom.txt";
+  private static final String GLOBAL_SPELLING_FILE = "spelling_global.txt";
   private static final String SPELLING_PROHIBIT_FILE = "/hunspell/prohibit.txt";
+  private static final String CUSTOM_SPELLING_PROHIBIT_FILE = "/hunspell/prohibit_custom.txt";
   private static final String SPELLING_FILE_VARIANT = null;
   private static final Comparator<String> STRING_LENGTH_COMPARATOR = Comparator.comparingInt(String::length);
 
   private final UserConfig userConfig;
-  private final Set<String> wordsToBeIgnored = new HashSet<>();
   private final Set<String> wordsToBeProhibited = new HashSet<>();
   private final List<RuleWithLanguage> altRules;
 
@@ -88,6 +90,7 @@ public abstract class SpellingCheckRule extends Rule {
   private List<DisambiguationPatternRule> antiPatterns = new ArrayList<>();
   private boolean considerIgnoreWords = true;
   private boolean convertsCase = false;
+  protected final Set<String> wordsToBeIgnored = new HashSet<>();
   protected int ignoreWordsWithLength = 0;
 
   public SpellingCheckRule(ResourceBundle messages, Language language, UserConfig userConfig) {
@@ -207,6 +210,12 @@ public abstract class SpellingCheckRule extends Rule {
 
   @Override
   public abstract RuleMatch[] match(AnalyzedSentence sentence) throws IOException;
+
+  /**
+   * @since 4.8
+   */
+  @Experimental
+  public abstract boolean isMisspelled(String word) throws IOException;
 
   @Override
   public boolean isDictionaryBasedSpellingRule() {
@@ -346,9 +355,21 @@ public abstract class SpellingCheckRule extends Rule {
         addIgnoreWords(ignoreWord);
       }
     }
+    for (String fileName : getAdditionalSpellingFileNames()) {
+      if (JLanguageTool.getDataBroker().resourceExists(fileName)) {
+        for (String ignoreWord : wordListLoader.loadWords(fileName)) {
+          addIgnoreWords(ignoreWord);
+        }
+      }
+    }
     updateIgnoredWordDictionary();
     for (String prohibitedWord : wordListLoader.loadWords(getProhibitFileName())) {
       addProhibitedWords(expandLine(prohibitedWord));
+    }
+    for (String fileName : getAdditionalProhibitFileNames()) {
+      for (String prohibitedWord : wordListLoader.loadWords(fileName)) {
+        addProhibitedWords(expandLine(prohibitedWord));
+      }
     }
   }
 
@@ -372,6 +393,16 @@ public abstract class SpellingCheckRule extends Rule {
   }
 
   /**
+   * Get the name of additional spelling file, which lists words to be accepted
+   * and used for suggestions, even when the spell checker would not accept them.
+   * @since 4.8
+   */
+  public List<String> getAdditionalSpellingFileNames() {
+    // NOTE: also add to GermanSpellerRule.getSpeller() when adding items here:
+    return Arrays.asList(language.getShortCode() + CUSTOM_SPELLING_FILE, GLOBAL_SPELLING_FILE);
+  }
+
+  /**
    * 
    * Get the name of the spelling file for a language variant (e.g., en-US or de-AT), 
    * which lists words to be accepted and used for suggestions, even when the spell
@@ -389,6 +420,15 @@ public abstract class SpellingCheckRule extends Rule {
    */
   protected String getProhibitFileName() {
     return language.getShortCode() + SPELLING_PROHIBIT_FILE;
+  }
+
+  /**
+   * Get the name of the prohibit file, which lists words not to be accepted, even
+   * when the spell checker would accept them.
+   * @since 2.8
+   */
+  protected List<String> getAdditionalProhibitFileNames() {
+    return Arrays.asList(language.getShortCode() + CUSTOM_SPELLING_PROHIBIT_FILE);
   }
 
   /**

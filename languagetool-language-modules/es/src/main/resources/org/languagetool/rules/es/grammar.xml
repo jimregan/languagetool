@@ -54,6 +54,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
     </unification>
     <category id="CASING" name="Mayúsculas y minúsculas" type="typographical">
         <rule id="MIN_MESES" name="Meses en minúscula">
+            <antipattern>
+                <token>Julio</token>
+                <token regexp="yes">Iglesias|C[eé]sar|Cort[aá]zar|Jones|Arce</token>
+            </antipattern>
+            <antipattern>
+                <token>Dos</token>
+                <token>de</token>
+                <token>Mayo</token>
+            </antipattern>
             <pattern case_sensitive="yes">
                 <token negate_pos="yes" postag="SENT_START"/>
                 <marker>
@@ -709,6 +718,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <example correction="Página"><marker>Pagina</marker> 34.</example>
             <example>Este libro lo pagina con el programa de edición.</example>
             <example>Se pagina al final del diseño.</example>
+        </rule>
+        <rule id="NUMERO" name="numero/número">
+            <antipattern>
+                <token regexp="yes">me|te|lo|la|le|nos|os|los|las|les</token>
+                <token>numero</token>
+            </antipattern>
+            <pattern>
+                <token>numero</token>
+            </pattern>
+            <message>Si es sustantivo, lleva tilde. Correcto si es del verbo 'numerar'.</message>
+            <suggestion>número</suggestion>
+            <example correction="número">Tengo un <marker>numero</marker> de lotería.</example>
+            <example correction="número">El <marker>numero</marker> 4.</example>
+            <example>La lista la numero secuencialmente.</example>
+            <example>Os numero por fecha de nacimiento.</example>
         </rule>
         <rulegroup id="AUN" name="aún/anun">
             <!-- AÚN > AUN -->
@@ -1842,11 +1866,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         </rule>
     </category>
     <category id="CAT4" name="Estilo" type="style">
-        <rule id="NUMERO" name="número">
+        <rule id="ABREVIATURA_NUMERO" name="abreviatura de número">
             <pattern>
                 <token regexp="yes">n\.?[º°]</token>
             </pattern>
-            <message>Considere el uso de la abreviatura correcta para numero.</message>
+            <message>Considere el uso de la abreviatura correcta para número.</message>
             <suggestion>n.º</suggestion>
             <example correction="n.º">Diário da República <marker>n°</marker> 18</example>
         </rule>

@@ -20,6 +20,7 @@ package org.languagetool.rules.de;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,6 +76,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
   private final Set<String> wordEndingsToBeProhibited    = new HashSet<>();
   private static final Map<Pattern, Function<String,List<String>>> ADDITIONAL_SUGGESTIONS = new HashMap<>();
   static {
+    put("lieder", w -> Arrays.asList("leider", "Lieder"));
     put("abgekatertes", "abgekartetes");
     put("Komplexheit", "Komplexität");
     put("einzigst", "einzig");
@@ -212,6 +214,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("ein[ua]ndhalb", "eineinhalb");
     put("[mM]illion(en)?mal", w -> Collections.singletonList(StringTools.uppercaseFirstChar(w.replaceFirst("mal", " Mal"))));
     put("Mysql", "MySQL");
+    put("MWST", "MwSt");
     put("Opelarena", "Opel Arena");
     put("Toll-Collect", "Toll Collect");
     put("[pP][qQ]-Formel", "p-q-Formel");
@@ -224,6 +227,12 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("[aA]r?th?rie?th?is", "Arthritis");
     put("zugesand", "zugesandt");
     put("weibt", "weißt");
+    put("fress", "friss");
+    put("Mamma", "Mama");
+    put("Präse", "Präsentation");
+    put("Präsen", "Präsentationen");
+    put("Orga", "Organisation");
+    put("Orgas", "Organisationen");
     put("instande?zusetzen", "instand zu setzen");
     put("Lia(si|is)onen", "Liaisons");
     put("[cC]asemana?ge?ment", "Case Management");
@@ -240,6 +249,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     putRepl("dreite[mnrs]?", "dreit", "dritt");
     putRepl("verblüte[mnrs]?", "blü", "blüh");
     putRepl("Einzigste[mnrs]?", "zigst", "zig");
+    putRepl("Invests?", "Invest", "Investment");
     putRepl("(aller)?einzie?gste[mnrs]?", "(aller)?einzie?gst", "einzig");
     putRepl("[iI]nterkurell(e[nmrs]?)?", "ku", "kultu");
     putRepl("[iI]ntersannt(e[mnrs]?)?", "sannt", "essant");
@@ -253,7 +263,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     putRepl("[gG]ottseidank", "[gG]ottseidank", "Gott sei Dank");
     putRepl("[gG]rundauf", "[gG]rundauf", "Grund auf");
     putRepl("[aA]nsichtnach", "[aA]nsicht", "Ansicht ");
-    putRepl("[uU]nswar", "swar", "d zwar");
+    putRepl("[uU]n[sz]war", "[sz]war", "d zwar");
     putRepl("[wW]aschte(s?t)?", "aschte", "usch");
     putRepl("[wW]aschten", "ascht", "usch");
     putRepl("Probiren?", "ir", "ier");
@@ -265,7 +275,6 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     putRepl("Letze[mnrs]?", "Letz", "Letzt");
     putRepl("[nN]i[vw]os?", "[nN]i[vw]o", "Niveau");
     putRepl("[dD]illetant(en)?", "[dD]ille", "Dilet");
-    putRepl("Makeups?", "up", "-up");
     putRepl("Frauenhofer-(Institut|Gesellschaft)", "Frauen", "Fraun");
     putRepl("Add-?Ons?", "Add-?On", "Add-on");
     putRepl("Addons?", "on", "-on");
@@ -414,7 +423,6 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("Gallop", "Galopp");
     put("Stop", "Stopp");
     put("Schertz", "Scherz");
-    put("dreiundhalb", "dreieinhalb");
     put("geschied", "geschieht");
     put("Aku", "Akku");
     put("Migrationspackt", "Migrationspakt");
@@ -463,6 +471,8 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("Tankungen", w -> Arrays.asList("Betankungen", "Tankvorgänge"));
     put("Ärcker", w -> Arrays.asList("Erker", "Ärger"));
     put("überlasstet", w -> Arrays.asList("überlastet", "überließt"));
+    put("zeren", w -> Arrays.asList("zerren", "zehren"));
+    put("Hänchen", w -> Arrays.asList("Hähnchen", "Hänschen"));
     put("[sS]itwazion", "Situation");
     put("geschriehen", "geschrien");
     put("beratete", "beriet");
@@ -471,6 +481,20 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("[pP]upatät", "Pubertät");
     put("überwendet", "überwindet");
     put("[bB]esichtung", "Besichtigung");
+    put("[hH]ell?owi[eh]?n", "Halloween");
+    put("geschmelt?zt", "geschmolzen");
+    put("gewunschen", "gewünscht");
+    put("bittete", "bat");
+    put("möchst", "möchtest");
+    put("anschein[dt]", "anscheinend");
+    put("Subvestitionen", "Subventionen");
+    put("angeschaffen", "angeschafft");
+    put("Rechtspruch", "Rechtsspruch");
+    put("guterletzt", "guter Letzt");
+    putRepl("[zZ]uguterletzt", "guterletzt", " guter Letzt");
+    putRepl("[uU]nfäh?r(e[mnrs]?)?", "fäh?r", "fair");
+    putRepl("[mM]edikatös(e[mnrs]?)?", "ka", "kamen");
+    putRepl("(ein|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)undhalb", "und", "ein");
     putRepl("[gG]roßzüge[mnrs]?", "züg", "zügig");
     putRepl("[äÄ]rtlich(e[mnrs]?)?", "rt", "rzt");
     putRepl("[sS]chnelligkeitsfehler[ns]?", "[sS]chnell", "Flücht");
@@ -543,6 +567,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     put("D[eèé]ja-?[vV]o?ue?", "Déjà-vu");
     put("Cr[eèé]me-?fra[iî]che", "Crème fraîche");
     put("[aA]rr?an?gemont", "Arrangement");
+    put("[aA]ngagemon", "Engagement");
     put("Phyrr?ussieg", "Pyrrhussieg");
     put("Mio", "Mio.");
     put("Datein", "Dateien");
@@ -923,19 +948,21 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     }
     try {
       String morfoFile = "/de/hunspell/de_" + language.getCountries()[0] + JLanguageTool.DICTIONARY_FILENAME_EXTENSION;
-      if (JLanguageTool.getDataBroker().resourceExists(morfoFile)) {
-        // spell data will not exist in LibreOffice/OpenOffice context
-        List<String> paths = Arrays.asList("/de/hunspell/spelling.txt");
-        StringBuilder concatPaths = new StringBuilder();
+      if (JLanguageTool.getDataBroker().resourceExists(morfoFile)) {  // spell data will not exist in LibreOffice/OpenOffice context
+        List<String> paths = Arrays.asList(
+          "/de/hunspell/spelling.txt",
+          "/de/hunspell/spelling_custom.txt",
+          "spelling_global.txt"
+        );
         List<InputStream> streams = new ArrayList<>();
         for (String path : paths) {
-          concatPaths.append(path).append(";");
           // add separation between streams so that missing newlines at the end don't join the last & first line from two files
           String separation = "# Start of file " + path.replaceAll("\n", "") + "\n";
           ByteArrayInputStream separationStream = new ByteArrayInputStream(
             Charset.defaultCharset().encode(separation).array());
           streams.add(separationStream);
           streams.add(JLanguageTool.getDataBroker().getFromResourceDirAsStream(path));
+          streams.add(new ByteArrayInputStream(System.lineSeparator().getBytes(StandardCharsets.UTF_8)));  // don't crash if input doesn't end with newline
         }
         try (BufferedReader br = new BufferedReader(
           new InputStreamReader(new SequenceInputStream(Collections.enumeration(streams)), UTF_8))) {
@@ -944,7 +971,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
             InputStream variantStream = JLanguageTool.getDataBroker().getFromResourceDirAsStream(languageVariantPlainTextDict);
             variantReader = new ExpandingReader (new BufferedReader(new InputStreamReader(variantStream, UTF_8)));
           }
-          return new MorfologikMultiSpeller(morfoFile, new ExpandingReader(br), concatPaths.toString(),
+          return new MorfologikMultiSpeller(morfoFile, new ExpandingReader(br), paths,
             variantReader, languageVariantPlainTextDict, userConfig != null ? userConfig.getAcceptedWords(): Collections.emptyList(), MAX_EDIT_DISTANCE);
         }
       } else {
@@ -1105,107 +1132,107 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
       return Collections.singletonList("Std.");
     } else if (word.matches(".*ibel[hk]eit$")) {
       suggestion = word.replaceFirst("el[hk]eit$", "ilität");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("aquise")) {
       suggestion = word.replaceFirst("aquise$", "akquise");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("standart")) {
       suggestion = word.replaceFirst("standart$", "standard");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("standarts")) {
       suggestion = word.replaceFirst("standarts$", "standards");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("tips")) {
       suggestion = word.replaceFirst("tips$", "tipps");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("tip")) {
       suggestion = word + "p";
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("entfehlung")) {
       suggestion = word.replaceFirst("ent", "emp");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.endsWith("oullie")) {
       suggestion = word.replaceFirst("oullie$", "ouille");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.startsWith("[dD]urschnitt")) {
       suggestion = word.replaceFirst("^urschnitt", "urchschnitt");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.startsWith("Bundstift")) {
       suggestion = word.replaceFirst("^Bundstift", "Buntstift");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("[aA]llmähll?i(g|ch)(e[mnrs]?)?")) {
       suggestion = word.replaceFirst("llmähll?i(g|ch)", "llmählich");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches(".*[mM]a[jy]onn?[äe]se.*")) {
       suggestion = word.replaceFirst("a[jy]onn?[äe]se", "ayonnaise");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches(".*[rR]es(a|er)[vw]i[he]?rung(en)?")) {
       suggestion = word.replaceFirst("es(a|er)[vw]i[he]?rung", "eservierung");
-      if (!hunspellDict.misspelled(suggestion)) { // suggest e.g. 'Ticketreservierung', but not 'Blödsinnsquatschreservierung'
+      if (hunspell.spell(suggestion)) { // suggest e.g. 'Ticketreservierung', but not 'Blödsinnsquatschreservierung'
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("[rR]eschaschier.+")) {
       suggestion = word.replaceFirst("schaschier", "cherchier");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches(".*[lL]aborants$")) {
       suggestion = word.replaceFirst("ts$", "ten");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("[pP]roff?ess?ion([äe])h?ll?(e[mnrs]?)?")) {
       suggestion = word.replaceFirst("roff?ess?ion([äe])h?l{1,2}", "rofessionell");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("[vV]erstehendniss?(es?)?")) {
       suggestion = word.replaceFirst("[vV]erstehendnis", "Verständnis");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("koregier.+")) {
       suggestion = word.replaceAll("reg", "rrig");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches("diagno[sz]ier.*")) {
       suggestion = word.replaceAll("gno[sz]ier", "gnostizier");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches(".*eiss.*")) {
       suggestion = word.replaceAll("eiss", "eiß");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.matches(".*uess.*")) {
       suggestion = word.replaceAll("uess", "üß");
-      if (!hunspellDict.misspelled(suggestion)) {
+      if (hunspell.spell(suggestion)) {
         return Collections.singletonList(suggestion);
       }
     } else if (word.equals("gin")) {
@@ -1259,17 +1286,17 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
         return Collections.singletonList("Ladys");
       } else if (word.endsWith("derbies")) {
         suggestion = word.replaceFirst("derbies$", "derbys");
-        if (!hunspellDict.misspelled(suggestion)) {
+        if (hunspell.spell(suggestion)) {
           return Collections.singletonList(suggestion);
         }
       } else if (word.endsWith("stories")) {
         suggestion = word.replaceFirst("stories$", "storys");
-        if (!hunspellDict.misspelled(suggestion)) {
+        if (hunspell.spell(suggestion)) {
           return Collections.singletonList(suggestion);
         }
       } else if (word.endsWith("parties")) {
         suggestion = word.replaceFirst("parties$", "partys");
-        if (!hunspellDict.misspelled(suggestion)) {
+        if (hunspell.spell(suggestion)) {
           return Collections.singletonList(suggestion);
         }
       }
@@ -1307,8 +1334,8 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
       return Collections.singletonList("Zynismus");
     } else if (word.matches("Email[a-zäöü]{5,}")) {
       String suffix = word.substring(5);
-      if (hunspellDict.misspelled(suffix)) {
-        List<String> suffixSuggestions = hunspellDict.suggest(suffix);
+      if (!hunspell.spell(suffix)) {
+        List<String> suffixSuggestions = hunspell.suggest(StringTools.uppercaseFirstChar(suffix));
         suffix = suffixSuggestions.isEmpty() ? suffix : suffixSuggestions.get(0);
       }
       return Collections.singletonList("E-Mail-"+Character.toUpperCase(suffix.charAt(0))+suffix.substring(1));
@@ -1325,7 +1352,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     }
     if (!StringTools.startsWithUppercase(word)) {
       String ucWord = StringTools.uppercaseFirstChar(word);
-      if (!suggestions.contains(ucWord) && !hunspellDict.misspelled(ucWord) && !ucWord.endsWith(".")) {
+      if (!suggestions.contains(ucWord) && hunspell.spell(ucWord) && !ucWord.endsWith(".")) {
         // Hunspell doesn't always automatically offer the most obvious suggestion for compounds:
         return Collections.singletonList(ucWord);
       }
@@ -1359,7 +1386,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
           stopAt = words.length-2;
         }
         for (int idx = startAt; idx < stopAt; idx++) {
-          if (hunspellDict.misspelled(words[idx])) {
+          if (!hunspell.spell(words[idx])) {
             List<String> list = sortSuggestionByQuality(words[idx], super.getSuggestions(words[idx]));
             suggestionLists.add(list);
           } else {
@@ -1446,7 +1473,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
   private String getParticipleForBaseform(String baseform) throws IOException {
     AnalyzedToken token = new AnalyzedToken(baseform, null, baseform);
     String[] forms = synthesizer.synthesize(token, "VER:PA2:.*", true);
-    if (forms.length > 0 && !hunspellDict.misspelled(forms[0])) {
+    if (forms.length > 0 && hunspell.spell(forms[0])) {
       return forms[0];
     }
     return null;
@@ -1471,12 +1498,12 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     boolean isCompound = nextWord != null && (compoundTokenizer.tokenize(nextWord).size() > 1 || nextWord.indexOf('-') > 0);
     if (isCompound) {
       word = StringUtils.removeEnd(word, "-");
-      boolean isMisspelled = hunspellDict.misspelled(word);  // "Stil- und Grammatikprüfung" or "Stil-, Text- und Grammatikprüfung"
+      boolean isMisspelled = !hunspell.spell(word);  // "Stil- und Grammatikprüfung" or "Stil-, Text- und Grammatikprüfung"
       if (isMisspelled && (super.ignoreWord(word) || wordsToBeIgnoredInCompounds.contains(word))) {
         isMisspelled = false;
       } else if (isMisspelled && word.endsWith("s") && isNeedingFugenS(StringUtils.removeEnd(word, "s"))) {
         // Vertuschungs- und Bespitzelungsmaßnahmen: remove trailing "s" before checking "Vertuschungs" so that the spell checker finds it
-        isMisspelled = hunspellDict.misspelled(StringUtils.removeEnd(word, "s"));
+        isMisspelled = !hunspell.spell(StringUtils.removeEnd(word, "s"));
       }
       return !isMisspelled;
     }
@@ -1529,10 +1556,10 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
       boolean isCandidateForNonHyphenatedCompound = !StringUtils.isAllUpperCase(ignoredWord) && (StringUtils.isAllLowerCase(partialWord) || ignoredWord.endsWith("-"));
       boolean needFugenS = isNeedingFugenS(ignoredWord);
       if (isCandidateForNonHyphenatedCompound && !needFugenS && partialWord.length() > 2) {
-        return !hunspellDict.misspelled(partialWord) || !hunspellDict.misspelled(StringUtils.capitalize(partialWord));
+        return hunspell.spell(partialWord) || hunspell.spell(StringUtils.capitalize(partialWord));
       } else if (isCandidateForNonHyphenatedCompound && needFugenS && partialWord.length() > 2) {
         partialWord = partialWord.startsWith("s") ? partialWord.substring(1) : partialWord;
-        return !hunspellDict.misspelled(partialWord) || !hunspellDict.misspelled(StringUtils.capitalize(partialWord));
+        return hunspell.spell(partialWord) || hunspell.spell(StringUtils.capitalize(partialWord));
       }
       return false;
     }
@@ -1564,7 +1591,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
 
     if (hasIgnoredWord) {
       for (String w : toSpellCheck) {
-        if (hunspellDict.misspelled(w)) {
+        if (!hunspell.spell(w)) {
           return false;
         }
       }

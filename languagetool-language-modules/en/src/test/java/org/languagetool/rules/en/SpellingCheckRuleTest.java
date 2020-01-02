@@ -21,8 +21,8 @@ package org.languagetool.rules.en;
 import org.junit.Test;
 import org.languagetool.AnalyzedSentence;
 import org.languagetool.JLanguageTool;
+import org.languagetool.Languages;
 import org.languagetool.TestTools;
-import org.languagetool.language.AmericanEnglish;
 import org.languagetool.rules.Rule;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.rules.spelling.SpellingCheckRule;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SpellingCheckRuleTest {
 
-  private final JLanguageTool lt = new JLanguageTool(new AmericanEnglish());
+  private final JLanguageTool lt = new JLanguageTool(Languages.getLanguageForShortCode("en-US"));
 
   @Test
   public void testIgnoreSuggestionsWithMorfologik() throws IOException {
@@ -89,11 +89,15 @@ public class SpellingCheckRuleTest {
 
   static class MySpellCheckingRule extends SpellingCheckRule {
     MySpellCheckingRule() {
-      super(TestTools.getEnglishMessages(), new AmericanEnglish(), null);
+      super(TestTools.getEnglishMessages(), Languages.getLanguageForShortCode("en-US"), null);
     }
     @Override public String getId() { return null; }
     @Override public String getDescription() { return null; }
     @Override public RuleMatch[] match(AnalyzedSentence sentence) throws IOException { return null; }
+    @Override
+    public boolean isMisspelled(String word) {
+      throw new RuntimeException("not implemented");
+    }
     void test() throws IOException {
       assertTrue(isUrl("http://www.test.de"));
       assertTrue(isUrl("http://www.test-dash.com"));

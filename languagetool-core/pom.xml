@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.languagetool</groupId>
         <artifactId>languagetool-parent</artifactId>
-        <version>4.8-SNAPSHOT</version>
+        <version>4.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -104,11 +104,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>4.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.carrot2</groupId>
@@ -223,6 +218,13 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.gitlab.dumonts</groupId>
+            <artifactId>hunspell</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

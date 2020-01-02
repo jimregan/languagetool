@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.languagetool.JLanguageTool;
+import org.languagetool.Languages;
 import org.languagetool.TestTools;
 import org.languagetool.language.AustrianGerman;
 import org.languagetool.language.German;
@@ -52,8 +53,8 @@ import morfologik.stemming.Dictionary;
 
 public class GermanSpellerRuleTest {
 
-  private static final GermanyGerman GERMAN_DE = new GermanyGerman();
-  private static final SwissGerman GERMAN_CH = new SwissGerman();
+  private static final GermanyGerman GERMAN_DE = (GermanyGerman) Languages.getLanguageForShortCode("de-DE");
+  private static final SwissGerman GERMAN_CH = (SwissGerman) Languages.getLanguageForShortCode("de-CH");
 
   //
   // NOTE: also manually run SuggestionRegressionTest when the suggestions are changing!
@@ -402,6 +403,13 @@ public class GermanSpellerRuleTest {
     assertFirstSuggestion("einbandfreier", "einwandfreier", rule, lt);
     assertFirstSuggestion("Beanstandigung", "Beanstandung", rule, lt);
     assertFirstSuggestion("Beanstandigungen", "Beanstandungen", rule, lt);
+    assertFirstSuggestion("zweiundhalb", "zweieinhalb", rule, lt);
+    assertFirstSuggestion("dreiundhalb", "dreieinhalb", rule, lt);
+    assertFirstSuggestion("Zuguterletzt", "Zu guter Letzt", rule, lt);
+    assertFirstSuggestion("guterletzt", "guter Letzt", rule, lt);
+    assertFirstSuggestion("unfährer", "unfairer", rule, lt);
+    assertFirstSuggestion("unfäre", "unfaire", rule, lt);
+    assertFirstSuggestion("medikatöses", "medikamentöses", rule, lt);
   }
 
   @Test
@@ -558,7 +566,7 @@ public class GermanSpellerRuleTest {
   // note: copied from HunspellRuleTest
   @Test
   public void testRuleWithAustrianGerman() throws Exception {
-    AustrianGerman language = new AustrianGerman();
+    AustrianGerman language = (AustrianGerman) Languages.getLanguageForShortCode("de-AT");
     HunspellRule rule = new AustrianGermanSpellerRule(TestTools.getMessages("de"), language);
     JLanguageTool lt = new JLanguageTool(language);
     commonGermanAsserts(rule, lt);
@@ -569,7 +577,7 @@ public class GermanSpellerRuleTest {
   // note: copied from HunspellRuleTest
   @Test
   public void testRuleWithSwissGerman() throws Exception {
-    SwissGerman language = new SwissGerman();
+    SwissGerman language = (SwissGerman) Languages.getLanguageForShortCode("de-CH");
     HunspellRule rule = new SwissGermanSpellerRule(TestTools.getMessages("de"), language);
     JLanguageTool lt = new JLanguageTool(language);
     commonGermanAsserts(rule, lt);
@@ -719,6 +727,19 @@ public class GermanSpellerRuleTest {
     assertCorrectionsByOrder(rule, "is", "IS", "die", "in", "im", "ist");  // 'ist' should actually be preferred...
     assertCorrectionsByOrder(rule, "Fux", "Fuchs");  // fixed in morfologik 2.1.4
     assertCorrectionsByOrder(rule, "schänken", "Schänken");  // "schenken" is missing
+  }
+  
+  @Test
+  public void testIsMisspelled() {
+    HunspellRule rule = new GermanSpellerRule(TestTools.getMessages("de"), GERMAN_DE);
+    assertTrue(rule.isMisspelled("dshfsdhsdf"));
+    assertTrue(rule.isMisspelled("Haussarbeit"));
+    assertTrue(rule.isMisspelled("Überschus"));
+    assertTrue(rule.isMisspelled("Überschussen"));
+
+    assertFalse(rule.isMisspelled("Hausarbeit"));
+    assertFalse(rule.isMisspelled("Überschuss"));
+    assertFalse(rule.isMisspelled("Überschüsse"));
   }
   
   @Test

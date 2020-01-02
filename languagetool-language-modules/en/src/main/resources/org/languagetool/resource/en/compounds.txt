@@ -130,6 +130,8 @@ mid-air+
 mid-airs+
 mid-life+
 multi-national+
+multi-stage+
+multi-staged+
 multi-purpose+
 never-the-less+
 new-comer+
@@ -161,6 +163,7 @@ pigeon-holing+
 pig-sticker+
 pin-wheel+
 pin-wheels+
+Play-Station+
 pre-load+
 pre-loading+
 pre-loaded+
@@ -207,7 +210,8 @@ tear-drop+
 tear-drops+
 tear-jerker+
 teen-age+
-there-after+
+Tik-Tok+
+#there-after+ # They will be in there after we ...
 there-fore+
 toll-gate+
 toll-gates+
@@ -222,6 +226,9 @@ under-stood+
 under-take+
 under-went+
 water-proof+
+you-tube+
+You-Tube+
+You-tube+
 
 # "*" at end of line = only offer hyphen suggestion:
 
@@ -263,6 +270,14 @@ anti-Semitism*
 argy-bargied*
 argy-bargies*
 argy-bargy*
+auto-repeat*
+auto-repeats*
+auto-repeated*
+auto-repeating*
+auto-renew*
+auto-renews*
+auto-renewed*
+auto-renewing*
 armour-plated*
 avant-garde*
 avant-gardism*
@@ -357,6 +372,10 @@ chairman-elect*
 Chester-le-Street*
 chicken-hearted*
 chicken-livered*
+chit-chat*
+chit-chats*
+chit-chatting*
+chit-chatted*
 chock-a-block*
 chock-full*
 class-conscious*
@@ -414,6 +433,10 @@ co-ownership*
 cop-outs*
 co-produced*
 co-site*
+co-executive*
+co-executives*
+Co-Executive*
+Co-Executives*
 cost-cutting*
 cost-effectiveness*
 cost-efficient*
@@ -451,6 +474,7 @@ cross-referencing*
 cross-refers*
 cross-sectional*
 cross-sectionally*
+cross-training*
 cruel-hearted*
 cruelty-free*
 cul-de-sac*
@@ -531,6 +555,10 @@ ear-stud*
 ear-studs*
 earth-shattering*
 east-north-east*
+e-cig*
+e-cigs*
+e-cigarette*
+e-cigarettes*
 e-commerce*
 eco-friendly*
 eco-conscious*
@@ -850,6 +878,7 @@ knick-knacks*
 knight-errantry*
 knocking-shop*
 knock-kneed*
+Kramp-Karrenbauer*
 labour-intensive*
 labour-saving*
 lace-ups*
@@ -908,6 +937,7 @@ loss-leader*
 loss-leaders*
 low-born*
 low-downs*
+low-key*
 low-lying*
 low-pitched*
 low-spirited*
@@ -951,6 +981,8 @@ mind-numbing*
 mind-numbingly*
 mischief-makers*
 mischief-making*
+mistake-free*
+mistake-prone*
 mock-ups*
 moss-grown*
 moth-eaten*
@@ -992,7 +1024,10 @@ new-laid*
 newly-weds*
 news-gathering*
 news-sheet*
+news-sheets*
 no-balled*
+no-brainer*
+no-brainers*
 non-acids*
 non-active*
 non-adjustable*
@@ -1093,6 +1128,8 @@ non-volunteers*
 non-yielding*
 nuclear-free*
 nuclear-powered*
+object-oriented*
+Object-Oriented*
 off-air*
 off-break*
 off-centre*
@@ -1108,6 +1145,7 @@ off-putting*
 off-road*
 off-roading*
 off-screen*
+off-topic*
 # off-season* Hotels are cheaper in the off season. www.lexico.com/en/definition/off_season
 off-street*
 off-white*
@@ -1213,6 +1251,7 @@ pre-authorisations*
 pre-authorization*
 pre-authorizations*
 pre-Christian*
+pre-Christmas*
 pre-decimal*
 pre-defined*
 pre-echo*
@@ -1324,10 +1363,11 @@ rip-roaring*
 rip-roaringly*
 road-based*
 role-play*
-role-played*
+# role-played* "the role played by an ..."
 role-playing*
 roller-coast*
 roller-skated*
+Rolls-Royce*
 roly-poly*
 root-mean-square*
 rose-coloured*
@@ -1662,6 +1702,8 @@ super-dooper*
 surface-active*
 surface-to-air*
 surface-to-surface*
+sub-target*
+sub-targets*
 sweet-talking*
 sweet-tempered*
 switch-blade*
@@ -1734,7 +1776,7 @@ toil-worn*
 tom-tom*
 tone-deaf*
 tongue-tied*
-top-heavy*
+top-heavy*  
 top-level*
 top-notch*
 topsy-turvy*
@@ -1751,6 +1793,10 @@ trigger-happy*
 trumped-up*
 trumpet-call*
 try-outs*
+T-Mobile*
+T-Systems*
+T-Shirt*
+T-Shirts*
 T-shirt*
 T-shirts*
 tut-tuts*
@@ -1891,7 +1937,16 @@ write-ups*
 x-axis*
 x-ray*
 X-ray*
+X-Ray*
+x-rays*
 X-rays*
+X-Rays*
+x-rayed*
+X-rayed*
+X-Rayed*
+x-raying*
+X-raying*
+X-Raying*
 y-axis*
 year-end*
 year-on-year*
@@ -2735,6 +2790,10 @@ pot-hunter
 pot-pourri
 pot-pourris
 pre-amplifier
+pre-configure
+pre-configured
+pre-configures
+pre-configuring
 pre-date
 pre-dated
 pre-dates
@@ -2793,6 +2852,9 @@ radio-telephone
 radio-telephones
 raw-boned
 re-allocated
+re-deploy
+re-deploys
+re-deploying
 re-deployed
 re-echo
 re-echoed
@@ -2853,7 +2915,7 @@ room-mates
 saw-horse
 #school-day # only plural noun "schooldays" exists as compound in lexico
 school-days
-school-time
+# school-time # does not exist in lexico
 scrum-half
 sea-girt
 seed-bed
@@ -3019,6 +3081,9 @@ wire-tapping
 wool-gathering
 wrong-footed
 wrong-headed
+bi-sexual?
+homo-sexual?
+hetero-sexual?
 Monte-Negro?
 Monte-negro?
 good-bye?
@@ -3035,6 +3100,10 @@ re-attend?
 re-attends?
 re-attended?
 re-attending?
+re-open?
+re-opens?
+re-opened?
+re-opening?
 re-schedule?
 re-schedules?
 re-scheduled?
@@ -3043,3 +3112,49 @@ screen-shot?
 screen-shots?
 eco-system?
 eco-systems?
+ultra-sonic?
+ultra-sound?
+ultra-violet?
+land-lord?
+land-lords?
+eye-witness?
+eye-witnesses?
+eye-witnessed?
+chrome-book?
+chrome-books?
+Chrome-Book?
+Chrome-Books?
+Chrome-book?
+Chrome-books?
+auto-pilot?
+auto-pilots?
+re-insert$
+re-inserts$
+re-inserted$
+re-inserting$
+rail-road$
+rail-roads$
+rail-roaded$
+rail-roading$
+multi-access$
+sub-task$
+sub-tasks$
+pre-install$
+pre-installs$
+pre-installing$
+pre-installed$
+five-seater*
+five-seaters*
+four-seater*
+four-seaters*
+two-seater*
+two-seaters*
+one-seater*
+one-seaters*
+Air-Pods+
+Home-Pod+
+Home-Pods+
+home-schooled?
+home-schooling?
+heart-breaking?
+heart-breakingly?

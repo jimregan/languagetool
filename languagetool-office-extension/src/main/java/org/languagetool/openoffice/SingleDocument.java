@@ -121,12 +121,15 @@ class SingleDocument {
   private ResultCache singleParaCache;            //  Cache for matches of text rules for single paragraphs
   private int resetFrom = 0;                      //  Reset from paragraph
   private int resetTo = 0;                        //  Reset to paragraph
+  private int numParasReset = 1;                  //  Number of paragraphs to reset
   private List<Boolean> isChecked;                //  List of status of all flat paragraphs of document
   private List<Integer> changedParas = null;      //  List of changed paragraphs after editing the document
   private int paraNum;                            //  Number of current checked paragraph
   List<Integer> minToCheckPara;                   //  List of minimal to check paragraphs for different classes of text level rules
   List<List<String>> textLevelRules;              //  List of text level rules sorted by different classes
-  Map<Integer, List<Integer>> ignoredMatches;           //  Map of matches (number of paragraph, number of character) that should be ignored after ignoreOnce was called  
+  Map<Integer, List<Integer>> ignoredMatches;     //  Map of matches (number of paragraph, number of character) that should be ignored after ignoreOnce was called
+  private boolean isRemote;
+  private List<Integer> headings;
 
   @SuppressWarnings("unused") 
   private ContextMenuInterceptor contextMenuInterceptor;
@@ -140,18 +143,10 @@ class SingleDocument {
     this.mDocHandler = mDH;
     this.sentencesCache = new ResultCache();
     this.singleParaCache = new ResultCache();
-    this.paragraphsCache = new ArrayList<>();
     if (config != null) {
       setConfigValues(config);
     }
-    if((doFullCheckAtFirst || numParasToCheck < 0) && mDocHandler != null) {
-      minToCheckPara = mDocHandler.getNumMinToCheckParas();
-      for(int i = 0; i < minToCheckPara.size(); i++) {
-        paragraphsCache.add(new ResultCache());
-      }
-    } else {
-      paragraphsCache.add(new ResultCache());
-    }
+    resetCache();
     ignoredMatches = new HashMap<>();
   }
   
@@ -165,6 +160,7 @@ class SingleDocument {
    */
   ProofreadingResult getCheckResults(String paraText, Locale locale, ProofreadingResult paRes, 
       int[] footnotePositions, boolean isParallelThread, boolean docReset, SwJLanguageTool langTool) {
+    isRemote = langTool.isRemote();
     try {
       if(docReset) {
         numLastVCPara = 0;
@@ -254,10 +250,18 @@ class SingleDocument {
     sentencesCache.removeAll();
     singleParaCache.removeAll();
     paragraphsCache = new ArrayList<>();
-    if(doFullCheckAtFirst || numParasToCheck < 0) {
+    numParasReset = numParasToCheck;
+    if((doFullCheckAtFirst || numParasToCheck < 0) && mDocHandler != null) {
       minToCheckPara = mDocHandler.getNumMinToCheckParas();
       for(int i = 0; i < minToCheckPara.size(); i++) {
         paragraphsCache.add(new ResultCache());
+      }
+      if(numParasReset < 0) {
+        for(int minPara : minToCheckPara) {
+          if(minPara > numParasReset) {
+            numParasReset = minPara;
+          }
+        }
       }
     } else {
       paragraphsCache.add(new ResultCache());
@@ -274,14 +278,12 @@ class SingleDocument {
     if(resetCheck) {
       if(doFullCheckAtFirst || numParasToCheck != 0) {
         loadIsChecked();
-//        paragraphsCache.removeRange(resetFrom, resetTo);
       }
     } else if(resetParaNum >= 0 && resetParaNum != paraNum) {
       resetCheck = true;
       resetParaNum = -1;
       if(doFullCheckAtFirst || numParasToCheck != 0) {
         loadIsChecked();
-//        paragraphsCache.removeRange(resetFrom, resetTo);
       }
     }
     return resetCheck;
@@ -368,7 +370,16 @@ class SingleDocument {
       }
       isReset = true;
     }
-
+    
+    // try to get next position from last FlatParagraph position (for performance reasons)
+    nParas = findNextParaPos(numLastFlPara, chPara);
+    if (nParas >= 0 && nParas < allParas.size() && chPara.equals(allParas.get(nParas))) {
+      numLastFlPara = nParas;
+      if (debugMode > 0) {
+        MessageHandler.printToLogFile("From last FlatPragraph Position: Number of Paragraph: " + nParas + logLineBreak);
+      }
+      return nParas;
+    }
     // Test if Size of allParas is correct; Reset if not
     nParas = docCursor.getNumberOfAllTextParagraphs();
     if (nParas < 2) {
@@ -393,60 +404,40 @@ class SingleDocument {
           && allParas.get(from).equals(oldParas.get(from))) {
         from++;
       }
-      if(numParasToCheck > 0) {
-        resetFrom = from - numParasToCheck - 1;
-      } else {
-        resetFrom = from - 1;
-      }
+      resetFrom = from - numParasReset;
       int to = 1;
       while (to <= allParas.size() && to <= oldParas.size()
           && allParas.get(allParas.size() - to).equals(
               oldParas.get(oldParas.size() - to))) {
         to++;
       }
-      if(numParasToCheck > 0) {
-        resetTo = allParas.size() + numParasToCheck - to;
-      } else {
-        resetTo = allParas.size() - to;
-      }
+      to = allParas.size() - to;
+      resetTo = to + numParasReset;
       if(!ignoredMatches.isEmpty()) {
         Map<Integer, List<Integer>> tmpIgnoredMatches = new HashMap<>();
         for (int i = 0; i < from; i++) {
           if(ignoredMatches.containsKey(i)) {
             tmpIgnoredMatches.put(i, ignoredMatches.get(i));
-//            MessageHandler.printToLogFile("Add to ignoredMatches: Paragraph: " + i + ", Maches: " + ignoredMatches.get(i).size());
           }
         }
         for (int i = to + 1; i < oldParas.size(); i++) {
           int n = i + allParas.size() - oldParas.size();
           if(ignoredMatches.containsKey(i)) {
             tmpIgnoredMatches.put(n, ignoredMatches.get(i));
-//            MessageHandler.printToLogFile("Add to ignoredMatches: Paragraph: " + n + ", Maches: " + ignoredMatches.get(i).size());
           }
         }
         ignoredMatches = tmpIgnoredMatches;
       }
-
       for(ResultCache cache : paragraphsCache) {
-        cache.removeAndShift(from, to, allParas.size() - oldParas.size());
+        cache.removeAndShift(resetFrom, resetTo, allParas.size() - oldParas.size());
       }
+      resetTo++;
       isReset = true;
       if(doResetCheck) {
-        from += numParasToCheck;
-        to -= numParasToCheck;
         sentencesCache.removeAndShift(from, to, allParas.size() - oldParas.size());
         resetCheck = true;
       }
       textIsChanged = true;
-    }
-    // try to get next position from last FlatParagraph position (for performance reasons)
-    nParas = findNextParaPos(numLastFlPara, chPara);
-    if (nParas >= 0 && nParas < allParas.size() && chPara.equals(allParas.get(nParas))) {
-      numLastFlPara = nParas;
-      if (debugMode > 0) {
-        MessageHandler.printToLogFile("From View Cursor: Number of Paragraph: " + nParas + logLineBreak);
-      }
-      return nParas;
     }
     //  try to get paragraph position from automatic iteration
     if (flatPara == null) {
@@ -500,15 +491,12 @@ class SingleDocument {
           resetCheck = true;
           resetParaNum = nParas;
         }
-        if(numParasToCheck > 0) {
-          resetFrom = nParas - numParasToCheck;
-          resetTo = nParas + numParasToCheck + 1;
-        } else {
-          resetFrom = nParas;
-          resetTo = nParas + 1;
+        if(!textIsChanged) {
+          resetFrom = nParas - numParasReset;
+          resetTo = nParas + numParasReset + 1;
+          ignoredMatches.remove(nParas);
+          textIsChanged = true;
         }
-        ignoredMatches.remove(nParas);
-        textIsChanged = true;
         return nParas;
       }
     }
@@ -551,6 +539,7 @@ class SingleDocument {
     if (allParas == null || allParas.size() < 1) {
       return false;
     }
+    headings = docCursor.getParagraphHeadings();
     //  change all footnotes to \u200B (like in paraText)
     //  List of footnotes
     List<int[]> footnotes = flatPara.getFootnotePositions();
@@ -608,18 +597,40 @@ class SingleDocument {
     if (numCurPara < 0 || allParas == null || allParas.size() < numCurPara - 1) {
       return "";
     }
+    int headingBefore = -1;
+    int headingAfter = -1;
+    if(numParasToCheck < -1) {
+      headingBefore = 0;
+      headingAfter = allParas.size();
+    } else {
+      for(int heading : headings) {
+        headingAfter = heading;
+        if(heading >= numCurPara) {
+          break;
+        } else {
+          headingBefore = headingAfter;
+        }
+      }
+      if(headingAfter == headingBefore) {
+        headingAfter = allParas.size();
+      }
+      headingBefore++;
+    }
     int startPos;
     int endPos;
-    if (numParasToCheck < 1) {
-      startPos = 0;
-      endPos = allParas.size();
+    if(headingAfter == numCurPara) {
+      startPos = numCurPara;
+      endPos = numCurPara + 1;
+    } else if (numParasToCheck < 1) {
+      startPos = headingBefore;
+      endPos = headingAfter;
     } else {
       startPos = numCurPara - numParasToCheck;
       if(textIsChanged && doResetCheck) {
         startPos -= numParasToCheck;
       }
-      if (startPos < 0) {
-        startPos = 0;
+      if (startPos < headingBefore) {
+        startPos = headingBefore;
       }
       endPos = numCurPara + 1 + numParasToCheck;
       if(!textIsChanged) {
@@ -627,8 +638,8 @@ class SingleDocument {
       } else if(doResetCheck) {
         endPos += numParasToCheck;
       }
-      if (endPos > allParas.size()) {
-        endPos = allParas.size();
+      if (endPos > headingAfter) {
+        endPos = headingAfter;
       }
     }
     StringBuilder docText = new StringBuilder(fixLinebreak(allParas.get(startPos)));
@@ -643,15 +654,30 @@ class SingleDocument {
    */
   private int getStartOfParagraph(int nPara, int checkedPara) {
     if (allParas != null && nPara >= 0 && nPara < allParas.size()) {
+      int headingBefore = -1;
+      if(numParasToCheck < -1) {
+        headingBefore = 0;
+      } else {
+        for(int heading : headings) {
+          if(heading > checkedPara) {
+            break;
+          } else {
+            headingBefore = heading;
+          }
+        }
+        headingBefore++;
+      }
       int startPos;
-      if (numParasToCheck < 1) {
-        startPos = 0;
+      if (headingBefore - 1 == checkedPara) {
+        startPos = checkedPara;
+      } else if (numParasToCheck < 1) {
+        startPos = headingBefore;
       } else {
         startPos = checkedPara - numParasToCheck;
         if(textIsChanged && doResetCheck) {
           startPos -= numParasToCheck;
         }
-        if (startPos < 0) startPos = 0;
+        if (startPos < headingBefore) startPos = headingBefore;
       }
       int pos = 0;
       for (int i = startPos; i < nPara; i++) {
@@ -718,10 +744,8 @@ class SingleDocument {
       }
     }
     Arrays.sort(errorArray, new ErrorPositionComparator());
-//    MessageHandler.printToLogFile("Merge Matches: paragraph: " + paraNum);
     if(ignoredMatches.containsKey(paraNum)) {
       List<Integer> xIgnoredMatches = ignoredMatches.get(paraNum);
-//      MessageHandler.printToLogFile("Ignored Matches: paragraph: " + paraNum + ", number matches: "+ xIgnoredMatches.size());
       List<SingleProofreadingError> filteredErrors = new ArrayList<>();
       for (SingleProofreadingError error : errorArray) {
         boolean noFilter = true;
@@ -746,6 +770,9 @@ class SingleDocument {
 
     if(paraNum < 0 || (numParasToCheck >= 0 && !doFullCheckAtFirst)) {
       pErrors.add(checkParaRules(paraText, paraNum, startSentencePos, endSentencePos, isParallelThread, langTool, 0));
+      if(doResetCheck && resetCheck) {
+        addChangedParas();
+      }
     } else {
       //  Real full text check / numParas < 0
       ResultCache oldCache = null;
@@ -756,7 +783,10 @@ class SingleDocument {
       }
       for(int i = 0; i < minToCheckPara.size(); i++) {
         numParasToCheck = minToCheckPara.get(i);
-        if(firstCheckIsDone && maxParasToCheck >= 0 && (numParasToCheck == -1 || numParasToCheck > maxParasToCheck)) {
+        if(!firstCheckIsDone && maxParasToCheck >= 0 && numParasToCheck < 0) {
+          numParasToCheck = -2;
+        }
+        if(firstCheckIsDone && maxParasToCheck >= 0 && (numParasToCheck < 0 || numParasToCheck > maxParasToCheck)) {
           numParasToCheck = maxParasToCheck;
         }
         defaultParaCheck = PARA_CHECK_DEFAULT;
@@ -767,7 +797,11 @@ class SingleDocument {
         }
         if(doResetCheck && resetCheck && numParasToCheck < 0) {
           oldCache = paragraphsCache.get(i);
-          paragraphsCache.set(i, new ResultCache());
+          if(numParasToCheck < -1) {
+            paragraphsCache.set(i, new ResultCache());
+          } else {
+            paragraphsCache.set(i, new ResultCache(oldCache));
+          }
         }
         pErrors.add(checkParaRules(paraText, paraNum, startSentencePos, endSentencePos, isParallelThread, langTool, i));
         if(doResetCheck && resetCheck) {
@@ -782,22 +816,7 @@ class SingleDocument {
               }
             }
           } else {
-            int firstPara = resetFrom;
-            if (firstPara < 0) {
-              firstPara = 0;
-            }
-            int lastPara = resetTo;
-            if (lastPara > allParas.size()) {
-              lastPara = allParas.size();
-            }
-            if(changedParas == null) {
-              changedParas = new ArrayList<>();
-            }
-            for (int n = firstPara; n < lastPara; n++) {
-              if(!changedParas.contains(n)) {
-                changedParas.add(n);
-              }
-            }
+            addChangedParas();
           }
         }
       }
@@ -811,6 +830,24 @@ class SingleDocument {
     return pErrors;
   }
   
+  private void addChangedParas() {
+    int firstPara = resetFrom;
+    if (firstPara < 0) {
+      firstPara = 0;
+    }
+    int lastPara = resetTo;
+    if (lastPara > allParas.size()) {
+      lastPara = allParas.size();
+    }
+    if(changedParas == null) {
+      changedParas = new ArrayList<>();
+    }
+    for (int n = firstPara; n < lastPara; n++) {
+      if(!changedParas.contains(n)) {
+        changedParas.add(n);
+      }
+    }
+  }
 
   @Nullable
   private SingleProofreadingError[] checkParaRules( String paraText, int paraNum, 
@@ -892,18 +929,40 @@ class SingleDocument {
       }
 
       //  check of numParasToCheck or full text 
+      int headingBefore = -1;
+      int headingAfter = -1;
+      if(numParasToCheck < -1) {
+        headingBefore = 0;
+        headingAfter = allParas.size();
+      } else {
+        for(int heading : headings) {
+          headingAfter = heading;
+          if(heading >= paraNum) {
+            break;
+          } else {
+            headingBefore = headingAfter;
+          }
+        }
+        if(headingAfter == headingBefore) {
+          headingAfter = allParas.size();
+        }
+        headingBefore++;
+      }
       int startPara;
       int endPara;
-      if(numParasToCheck < 0) {
-        startPara = 0;
-        endPara = allParas.size();
+      if(headingAfter == paraNum) {
+        startPara = paraNum;
+        endPara = paraNum + 1;
+      } else if(numParasToCheck < 0) {
+        startPara = headingBefore;
+        endPara = headingAfter;
       } else {
         startPara = paraNum;
         if(textIsChanged && doResetCheck) {
           startPara -= numParasToCheck;
         }
-        if(startPara < 0) {
-          startPara = 0;
+        if(startPara < headingBefore) {
+          startPara = headingBefore;
         }
         endPara= paraNum + 1;
         if(textIsChanged && doResetCheck) {
@@ -911,8 +970,8 @@ class SingleDocument {
         } else if(!textIsChanged){
           endPara += defaultParaCheck;
         }
-        if(endPara > allParas.size()) {
-          endPara = allParas.size();
+        if(endPara > headingAfter) {
+          endPara = headingAfter;
         }
       }
       int startPos = getStartOfParagraph(startPara, paraNum);
@@ -1179,6 +1238,7 @@ class SingleDocument {
     private final static String LT_OPTIONS_URL = "service:org.languagetool.openoffice.Main?configure";
     private final static String LT_IGNORE_ONCE = "service:org.languagetool.openoffice.Main?ignoreOnce";
     private final static String LT_DEACTIVATE_RULE = "service:org.languagetool.openoffice.Main?deactivateRule";
+    private final static String LT_REMOTE_HINT = "service:org.languagetool.openoffice.Main?remoteHint";   
 
     public ContextMenuInterceptor() {}
     
@@ -1219,8 +1279,7 @@ class SingleDocument {
         XIndexContainer xContextMenu = aEvent.ActionTriggerContainer;
         int count = xContextMenu.getCount();
         
-        //  Version to add LT Options Item only if a Grammar or Spell error was detected
-        //  TODO: delete or activate after practice test
+        //  Add LT Options Item if a Grammar or Spell error was detected
         for (int i = 0; i < count; i++) {
           Any a = (Any) xContextMenu.getByIndex(i);
           XPropertySet props = (XPropertySet) a.getObject();
@@ -1255,12 +1314,22 @@ class SingleDocument {
               xNewMenuEntry1.setPropertyValue("Text", MESSAGES.getString("loContextMenuDeactivateRule"));
               xNewMenuEntry1.setPropertyValue("CommandURL", LT_DEACTIVATE_RULE);
               xContextMenu.insertByIndex(i + 2, xNewMenuEntry1);
-
+              
+              int nId = i + 4;
+              if(isRemote) {
+                XPropertySet xNewMenuEntry2 = UnoRuntime.queryInterface(XPropertySet.class,
+                    xMenuElementFactory.createInstance("com.sun.star.ui.ActionTrigger"));
+                xNewMenuEntry2.setPropertyValue("Text", MESSAGES.getString("loMenuRemoteInfo"));
+                xNewMenuEntry2.setPropertyValue("CommandURL", LT_REMOTE_HINT);
+                xContextMenu.insertByIndex(nId, xNewMenuEntry2);
+                nId++;
+              }
+              
               XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,
                   xMenuElementFactory.createInstance("com.sun.star.ui.ActionTrigger"));
               xNewMenuEntry.setPropertyValue("Text", MESSAGES.getString("loContextMenuOptions"));
               xNewMenuEntry.setPropertyValue("CommandURL", LT_OPTIONS_URL);
-              xContextMenu.insertByIndex(i + 4, xNewMenuEntry);
+              xContextMenu.insertByIndex(nId, xNewMenuEntry);
   
               return ContextMenuInterceptorAction.EXECUTE_MODIFIED;
             }
@@ -1273,11 +1342,22 @@ class SingleDocument {
             xMenuElementFactory.createInstance("com.sun.star.ui.ActionTriggerSeparator"));
         xSeparator.setPropertyValue("SeparatorType", ActionTriggerSeparatorType.LINE);
         xContextMenu.insertByIndex(count, xSeparator);
+        
+        int nId = count + 1;
+        if(isRemote) {
+          XPropertySet xNewMenuEntry2 = UnoRuntime.queryInterface(XPropertySet.class,
+              xMenuElementFactory.createInstance("com.sun.star.ui.ActionTrigger"));
+          xNewMenuEntry2.setPropertyValue("Text", MESSAGES.getString("loMenuRemoteInfo"));
+          xNewMenuEntry2.setPropertyValue("CommandURL", LT_REMOTE_HINT);
+          xContextMenu.insertByIndex(nId, xNewMenuEntry2);
+          nId++;
+        }
+
         XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,
             xMenuElementFactory.createInstance("com.sun.star.ui.ActionTrigger"));
         xNewMenuEntry.setPropertyValue("Text", MESSAGES.getString("loContextMenuOptions"));
         xNewMenuEntry.setPropertyValue("CommandURL", LT_OPTIONS_URL);
-        xContextMenu.insertByIndex(count + 1, xNewMenuEntry);
+        xContextMenu.insertByIndex(nId, xNewMenuEntry);
 
         return ContextMenuInterceptorAction.EXECUTE_MODIFIED;
 

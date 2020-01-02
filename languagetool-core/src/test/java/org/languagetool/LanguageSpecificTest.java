@@ -21,6 +21,7 @@ package org.languagetool;
 import org.languagetool.rules.*;
 import org.languagetool.rules.patterns.AbstractPatternRule;
 import org.languagetool.rules.patterns.PatternRuleLoader;
+import org.languagetool.tagging.disambiguation.rules.DisambiguationRuleTest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,11 @@ public class LanguageSpecificTest {
     testJavaRules(onlyRunCode);
     //testExampleAvailable(onlyRunCode);
     countTempOffRules(lang);
+    try {
+      new DisambiguationRuleTest().testDisambiguationRulesFromXML();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private final static Map<String, Integer> idToExpectedMatches = new HashMap<>();
@@ -78,7 +84,7 @@ public class LanguageSpecificTest {
       List<Rule> allRules = lt.getAllRules();
       for (Rule rule : allRules) {
         if (rule.getIncorrectExamples().size() == 0) {
-          System.out.println("*** WARNING: " + language.getShortCodeWithCountryAndVariant() + " rule " + rule.getId() + " has no incorrect examples");
+          System.err.println("*** WARNING: " + language.getShortCodeWithCountryAndVariant() + " rule " + rule.getId() + " has no incorrect examples");
         }
       }
     }
@@ -202,11 +208,11 @@ public class LanguageSpecificTest {
     System.out.println("Number of default='temp_off' rules for " + lang + ": " + count);
     int limit = 10;
     if (count > limit) {
-      System.out.println("################################################################################################");
-      System.out.println("WARNING: " + count + " default='temp_off' rules for " + lang + ", please make sure to turn on these");
-      System.out.println("WARNING: rules after they have been tested (or use default='off' to turn them off permanently)");
-      System.out.println("WARNING: (this warning appears if there are more than " + limit + " default='temp_off' rules)");
-      System.out.println("################################################################################################");
+      System.err.println("################################################################################################");
+      System.err.println("WARNING: " + count + " default='temp_off' rules for " + lang + ", please make sure to turn on these");
+      System.err.println("WARNING: rules after they have been tested (or use default='off' to turn them off permanently)");
+      System.err.println("WARNING: (this warning appears if there are more than " + limit + " default='temp_off' rules)");
+      System.err.println("################################################################################################");
     }
   }
   

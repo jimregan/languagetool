@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.languagetool</groupId>
         <artifactId>languagetool-parent</artifactId>
-        <version>4.8-SNAPSHOT</version>
+        <version>4.9-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.hankcs</groupId>
             <artifactId>hanlp</artifactId>
-            <version>portable-1.7.4</version>
+            <version>portable-1.7.5</version>
         </dependency>
         <dependency>
             <groupId>com.google.code</groupId>

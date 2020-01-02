@@ -1616,7 +1616,6 @@ geändert
 eifersüchtig
 dichter
 blume
-york
 überzeugen
 seltsam
 schwarze
@@ -8222,7 +8221,6 @@ trainieren
 tour
 tim
 thermometer
-the
 tänzerin
 syrien
 stürmte
@@ -10033,3 +10031,5 @@ salü
 grüessech
 geil
 tach
+rabatt
+kräuter

@@ -40,6 +40,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class ConfigurationDialog implements ActionListener {
   private boolean configChanged = false;
   private boolean profileChanged = true;
   private boolean restartShow = false;
+  private boolean firstSelection = true;
 
   private JDialog dialog;
   private JCheckBox serverCheckbox;
@@ -502,7 +504,7 @@ public class ConfigurationDialog implements ActionListener {
   
   private void createOfficeElements(GridBagConstraints cons, JPanel portPanel) {
     int numParaCheck = config.getNumParasToCheck();
-    JRadioButton[] radioButtons = new JRadioButton[3];
+    JRadioButton[] radioButtons = new JRadioButton[4];
     ButtonGroup numParaGroup = new ButtonGroup();
     radioButtons[0] = new JRadioButton(Tools.getLabel(messages.getString("guiCheckOnlyParagraph")));
     radioButtons[0].setActionCommand("ParagraphCheck");
@@ -510,41 +512,62 @@ public class ConfigurationDialog implements ActionListener {
     radioButtons[1] = new JRadioButton(Tools.getLabel(messages.getString("guiCheckFullText")));
     radioButtons[1].setActionCommand("FullTextCheck");
     
-    radioButtons[2] = new JRadioButton(Tools.getLabel(messages.getString("guiCheckNumParagraphs")));
-    radioButtons[2].setActionCommand("NParagraphCheck");
-    radioButtons[2].setSelected(true);
+    radioButtons[2] = new JRadioButton(Tools.getLabel(messages.getString("guiCheckChapter")));
+    radioButtons[2].setActionCommand("ChapterCheck");
+    
+    radioButtons[3] = new JRadioButton(Tools.getLabel(messages.getString("guiCheckNumParagraphs")));
+    radioButtons[3].setActionCommand("NParagraphCheck");
 
     JTextField numParaField = new JTextField(Integer.toString(5), 2);
     numParaField.setEnabled(radioButtons[2].isSelected());
     numParaField.setMinimumSize(new Dimension(30, 25));
     
-    for (int i = 0; i < 3; i++) {
+    JCheckBox fullTextCheckAtFirstBox = new JCheckBox(Tools.getLabel(messages.getString("guiCheckFullTextAtFirst")));
+    fullTextCheckAtFirstBox.setSelected(config.doFullCheckAtFirst());
+    fullTextCheckAtFirstBox.addItemListener(e -> config.setFullCheckAtFirst(fullTextCheckAtFirstBox.isSelected()));
+
+    for (int i = 0; i < 4; i++) {
       numParaGroup.add(radioButtons[i]);
     }
     
     if (numParaCheck == 0) {
       radioButtons[0].setSelected(true);
       numParaField.setEnabled(false);
-    } else if (numParaCheck < 0) {
+      fullTextCheckAtFirstBox.setEnabled(true);
+    } else if (numParaCheck < -1) {
       radioButtons[1].setSelected(true);
       numParaField.setEnabled(false);    
-    } else {
+      fullTextCheckAtFirstBox.setEnabled(false);
+    } else if (numParaCheck < 0) {
       radioButtons[2].setSelected(true);
+      numParaField.setEnabled(false);    
+      fullTextCheckAtFirstBox.setEnabled(false);
+    } else {
+      radioButtons[3].setSelected(true);
       numParaField.setText(Integer.toString(numParaCheck));
       numParaField.setEnabled(true);
+      fullTextCheckAtFirstBox.setEnabled(true);
     }
 
     radioButtons[0].addActionListener(e -> {
       numParaField.setEnabled(false);
+      fullTextCheckAtFirstBox.setEnabled(true);
       config.setNumParasToCheck(0);
     });
     
     radioButtons[1].addActionListener(e -> {
       numParaField.setEnabled(false);
-      config.setNumParasToCheck(-1);
+      fullTextCheckAtFirstBox.setEnabled(false);
+      config.setNumParasToCheck(-2);
     });
     
     radioButtons[2].addActionListener(e -> {
+      numParaField.setEnabled(false);
+      fullTextCheckAtFirstBox.setEnabled(false);
+      config.setNumParasToCheck(-1);
+    });
+    
+    radioButtons[3].addActionListener(e -> {
       int numParaCheck1 = Integer.parseInt(numParaField.getText());
       if (numParaCheck1 < 1) numParaCheck1 = 1;
       else if (numParaCheck1 > 99) numParaCheck1 = 99;
@@ -552,6 +575,7 @@ public class ConfigurationDialog implements ActionListener {
       numParaField.setForeground(Color.BLACK);
       numParaField.setText(Integer.toString(numParaCheck1));
       numParaField.setEnabled(true);
+      fullTextCheckAtFirstBox.setEnabled(true);
     });
     
     numParaField.getDocument().addDocumentListener(new DocumentListener() {
@@ -585,9 +609,9 @@ public class ConfigurationDialog implements ActionListener {
     
     cons.gridy++;
     cons.insets = new Insets(0, 30, 0, 0);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       portPanel.add(radioButtons[i], cons);
-      if (i < 2) cons.gridy++;
+      if (i < 3) cons.gridy++;
     }
     cons.gridx = 1;
     portPanel.add(numParaField, cons);
@@ -613,9 +637,6 @@ public class ConfigurationDialog implements ActionListener {
     cons.gridy++;
     portPanel.add(noMultiResetbox, cons);
     
-    JCheckBox fullTextCheckAtFirstBox = new JCheckBox(Tools.getLabel(messages.getString("guiCheckFullTextAtFirst")));
-    fullTextCheckAtFirstBox.setSelected(config.doFullCheckAtFirst());
-    fullTextCheckAtFirstBox.addItemListener(e -> config.setFullCheckAtFirst(fullTextCheckAtFirstBox.isSelected()));
     cons.insets = new Insets(0, 4, 0, 0);
     cons.gridx = 0;
     cons.gridy++;
@@ -655,8 +676,22 @@ public class ConfigurationDialog implements ActionListener {
     JCheckBox useServerBox = new JCheckBox(Tools.getLabel(messages.getString("guiUseServer")) + " ");
     useServerBox.setSelected(config.useOtherServer());
     useServerBox.addItemListener(e -> {
-      config.setUseOtherServer(useServerBox.isSelected());
-      otherServerNameField.setEnabled(useServerBox.isSelected());
+      int select = JOptionPane.OK_OPTION;
+      boolean selected = useServerBox.isSelected();
+      if(selected && firstSelection) {
+        select = showRemoteServerHint(useServerBox, true);
+        firstSelection = false;
+      } else {
+        firstSelection = true;
+      }
+      if(select == JOptionPane.OK_OPTION) {
+        useServerBox.setSelected(selected);
+        config.setUseOtherServer(useServerBox.isSelected());
+        otherServerNameField.setEnabled(useServerBox.isSelected());
+      } else {
+        useServerBox.setSelected(false);
+        firstSelection = true;
+      }
     });
 
     JCheckBox useRemoteServerBox = new JCheckBox(Tools.getLabel(messages.getString("guiUseRemoteServer")));
@@ -664,13 +699,28 @@ public class ConfigurationDialog implements ActionListener {
     useServerBox.setEnabled(useRemoteServerBox.isSelected());
     otherServerNameField.setEnabled(useRemoteServerBox.isSelected() && useServerBox.isSelected());
     isMultiThreadBox.setEnabled(!useRemoteServerBox.isSelected());
-    useRemoteServerBox.addItemListener(e -> {
-      config.setRemoteCheck(useRemoteServerBox.isSelected());
-      useServerBox.setEnabled(useRemoteServerBox.isSelected());
-      otherServerNameField.setEnabled(useRemoteServerBox.isSelected() && useServerBox.isSelected());
-      isMultiThreadBox.setEnabled(!useRemoteServerBox.isSelected());
-    });
     
+    useRemoteServerBox.addItemListener(e -> {
+      int select = JOptionPane.OK_OPTION;
+      boolean selected = useRemoteServerBox.isSelected();
+      if(selected && firstSelection) {
+        select = showRemoteServerHint(useRemoteServerBox, false);
+        firstSelection = false;
+      } else {
+        firstSelection = true;
+      }
+      if(select == JOptionPane.OK_OPTION) {
+        useRemoteServerBox.setSelected(selected);
+        config.setRemoteCheck(useRemoteServerBox.isSelected());
+        useServerBox.setEnabled(useRemoteServerBox.isSelected());
+        otherServerNameField.setEnabled(useRemoteServerBox.isSelected() && useServerBox.isSelected());
+        isMultiThreadBox.setEnabled(!useRemoteServerBox.isSelected());
+      } else {
+        useRemoteServerBox.setSelected(false);
+        firstSelection = true;
+      }
+    });
+  
     cons.gridy++;
     portPanel.add(useRemoteServerBox, cons);
     cons.insets = new Insets(0, 30, 0, 0);
@@ -690,6 +740,17 @@ public class ConfigurationDialog implements ActionListener {
     cons.gridy++;
     portPanel.add(serverPanel, cons);
 
+  }
+  
+  private int showRemoteServerHint(Component component, boolean otherServer) {
+    if(config.useOtherServer() || otherServer) {
+        return JOptionPane.showConfirmDialog(component, 
+            MessageFormat.format(messages.getString("loRemoteInfoOtherServer"), config.getServerUrl()), 
+          messages.getString("loMenuRemoteInfo"), JOptionPane.OK_CANCEL_OPTION);
+    } else {
+      return JOptionPane.showConfirmDialog(component, messages.getString("loRemoteInfoDefaultServer"), 
+          messages.getString("loMenuRemoteInfo"), JOptionPane.OK_CANCEL_OPTION);
+    }
   }
 
   @NotNull
@@ -1331,5 +1392,5 @@ public class ConfigurationDialog implements ActionListener {
     }
     return panel;
   }
-  
+
 }
