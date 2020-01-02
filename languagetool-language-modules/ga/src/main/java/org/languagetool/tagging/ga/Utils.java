@@ -118,7 +118,7 @@ public class Utils {
         case 'B':
         case 'b':
           if((ch1 == 'p' || ch1 == 'P') ||
-            in.length() > 3 && in.charAt(1) == '-' && (ch1 == 'p' || ch1 == 'P')) {
+            in.length() > 3 && in.charAt(1) == '-') {
             return unEclipseChar(in, 'b', 'p');
           } else {
             return unEclipseF(in);
@@ -138,7 +138,7 @@ public class Utils {
   }
 
   /**
-   * Attempts to unlenite a string
+   * Attempts to unlenite a string (See {@link #lenite(String)})
    * Deliberately does not check if first character is one
    * that ought to be lenited (this can be checked in XML rules)
    * @param in
@@ -154,6 +154,17 @@ public class Utils {
     return null;
   }
 
+  /**
+   * Removes lenition from a word beginning with 's', following
+   * the definite article; as an exception to conventional
+   * lenition, this is a 't' prefix.
+   * The standard representation is a lowercase 't', regardless
+   * of the case of the word; this function additionally checks
+   * for incorrect (e.g., capital 'T') and prestandard (e.g.,
+   * hyphenated 't-') versions.
+   * @param in The written form
+   * @return The form with lenition removed
+   */
   public static String unLeniteDefiniteS(String in) {
     String[] uppers = {"Ts", "T-s", "TS", "T-S", "t-S", "tS"};
     String[] lowers = {"ts", "t-s"};
@@ -309,6 +320,16 @@ public class Utils {
     }
   }
 
+  /**
+   * The (non-definite) eclipsed form of 's', 'sh',
+   * is pronounced like 'h' in English; words beginning
+   * with 's' can only have lenition applied if the
+   * following letter would be easily pronounced after
+   * this sound: this function checks if the that second
+   * letter is one of them
+   * @param c The second letter of a word beginning with 's'
+   * @return true if the word can be lenited
+   */
   public static boolean isSLenitable(char c) {
     switch(c) {
       case 'l':
@@ -330,6 +351,17 @@ public class Utils {
     }
   }
 
+  /**
+   * lenites a word
+   * ("Lenition" in Irish grammar is an initial mutation,
+   * historically related to phonetic lenition; its
+   * written representation is an 'h' after the initial
+   * consonant).
+   * In this context, to "lenite" is to apply lenition)
+   * @param in word form to be lenited
+   * @return lenited form, or unmodified string if it
+   * cannot be lenited
+   */
   public static String lenite(String in) {
     if(in.length() < 2) {
       return in;
@@ -350,6 +382,21 @@ public class Utils {
     }
   }
 
+  /**
+   * eclipses a word
+   * ("Eclipsis" in Irish grammar is an initial mutation,
+   * represented as a prefix to the word that replaces
+   * the pronunciation of the letter for consonants, i.e.,
+   * 'f' is eclipsed as 'bh' - 'focal' becomes 'bhfocal' -
+   * but only 'bh' (not 'f') is pronounced; or, with vowels,
+   * an initial 'n' is added (hyphenated before a lowercase
+   * word, lowercased but not hyphenated before an uppercase
+   * or titlecase word).
+   * In this context, to "eclipse" is to apply eclipsis)
+   * @param in word form to be eclipsed
+   * @return eclipsed form, or unmodified string if it
+   * cannot be eclipsed
+   */
   public static String eclipse(String in) {
     if(in == null || in.equals("")) {
       return in;
@@ -380,11 +427,153 @@ public class Utils {
     }
   }
 
+  /**
+   * Case folding in Irish is non-trivial: initial mutations that
+   * prefix the word are always written in lowercase; 'n' and 't'
+   * are written with a hyphen before a lowercase vowel.
+   * Converting to uppercase is impossible without a dictionary:
+   * unlike 'n' and 't' (and unlike Scots Gaelic), 'h' is not
+   * written hyphenated as 'h' was not traditionally a 'letter', per
+   * se, but was used to indicate phonetic changes: in modern Irish,
+   * there are enough words that begin with 'h' that converting to
+   * uppercase is impossible without a dictionary.
+   * @param s the word to lowercase
+   * @return lowercased word
+   */
   public static String toLowerCaseIrish(String s) {
     if(s.length() > 1 && (s.charAt(0) == 'n' || s.charAt(0) == 't') && isUpperVowel(s.charAt(1))) {
       return s.substring(0,1) + "-" + s.substring(1).toLowerCase();
     } else {
       return s.toLowerCase();
     }
+  }
+
+  private static boolean isUpperPonc(char c) {
+    switch(c) {
+      case 'Ḃ':
+      case 'Ċ':
+      case 'Ḋ':
+      case 'Ḟ':
+      case 'Ġ':
+      case 'Ṁ':
+      case 'Ṗ':
+      case 'Ṡ':
+      case 'Ṫ':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  private static boolean isLowerPonc(char c) {
+    switch(c) {
+      case 'ḃ':
+      case 'ċ':
+      case 'ḋ':
+      case 'ḟ':
+      case 'ġ':
+      case 'ṁ':
+      case 'ṗ':
+      case 'ṡ':
+      case 'ṫ':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check if the character is dotted ('ponc' in Irish)
+   * @param c the character to check
+   * @return true if the character is dotted, false otherwise
+   */
+  public static boolean isPonc(char c) {
+    return isUpperPonc(c) || isLowerPonc(c);
+  }
+
+  public static boolean containsPonc(String s) {
+    for(char c : s.toCharArray()) {
+      if(isPonc(c)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static char unPonc(char c) {
+    switch(c) {
+      case 'Ḃ':
+        return 'B';
+      case 'Ċ':
+        return 'C';
+      case 'Ḋ':
+        return 'D';
+      case 'Ḟ':
+        return 'F';
+      case 'Ġ':
+        return 'G';
+      case 'Ṁ':
+        return 'M';
+      case 'Ṗ':
+        return 'P';
+      case 'Ṡ':
+        return 'S';
+      case 'Ṫ':
+        return 'T';
+      case 'ḃ':
+        return 'b';
+      case 'ċ':
+        return 'c';
+      case 'ḋ':
+        return 'd';
+      case 'ḟ':
+        return 'f';
+      case 'ġ':
+        return 'g';
+      case 'ṁ':
+        return 'm';
+      case 'ṗ':
+        return 'p';
+      case 'ṡ':
+        return 's';
+      case 'ṫ':
+        return 't';
+      default:
+        return c;
+    }
+  }
+
+  /**
+   * Converts pre-standard lenition to modern
+   * (converts dotted (= ponc) letters to the equivalent
+   * undotted, followed by 'h'
+   * @param s string to convert
+   * @return converted string
+   */
+  public static String unPonc(String s) {
+    StringBuilder sb = new StringBuilder();
+    for(int i = 0; i < s.length(); i++) {
+      if(!isPonc(s.charAt(i))) {
+        sb.append(unPonc(s.charAt(i)));
+      } else {
+        if(isLowerPonc(s.charAt(i))) {
+          sb.append(unPonc(s.charAt(i)));
+          sb.append('h');
+        } else {
+          if(i < s.length() - 1 && Character.isUpperCase(s.charAt(i + 1))) {
+            sb.append(unPonc(s.charAt(i)));
+            sb.append('H');
+          } else if(i == s.length() - 1 && i > 0 && Character.isUpperCase(s.charAt(i - 1))) {
+            sb.append(unPonc(s.charAt(i)));
+            sb.append('H');
+          } else {
+            sb.append(unPonc(s.charAt(i)));
+            sb.append('h');
+          }
+        }
+      }
+    }
+
+    return sb.toString();
   }
 }

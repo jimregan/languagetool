@@ -64,7 +64,7 @@ public class IrishReplaceRule extends AbstractSimpleReplaceRule {
 
   @Override
   public String getDescription() {
-    return "";
+    return "Litriú mícheart, m.sh., \"agsu\" in áit \"agus\"";
   }
 
   @Override
@@ -74,7 +74,8 @@ public class IrishReplaceRule extends AbstractSimpleReplaceRule {
 
   @Override
   public String getMessage(String tokenStr,List<String> replacements) {
-    return "Litriú mícheart.";
+    return "Litriú mícheart: \""
+        + String.join(", ", replacements) + "\".";
   }
 
   @Override
