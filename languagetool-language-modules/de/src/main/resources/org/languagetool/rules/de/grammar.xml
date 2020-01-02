@@ -5127,6 +5127,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             </rule>
             <rule>
                 <antipattern>
+                    <token />
+                    <token />
+                    <token case_sensitive="yes">Link</token>
+                </antipattern>
+                <antipattern>
                     <token regexp="yes">mit|zu</token>
                     <token>recht</token>
                 </antipattern>
@@ -5140,6 +5145,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <example>Die Stoßstange ist vorne recht lädiert.</example>
                 <example>Er steht mit Recht hinten.</example>
                 <example>Die Stoßstange ist vorne recht stark beschädigt.</example>
+                <example>Bitte in der Regel den Link oben einbinden.</example>
             </rule>
             <rule>
                 <antipattern>
@@ -8603,7 +8609,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <short>&getrennt;.</short>
             <example correction="WhatsApp">Wir schrieben per <marker>whats app</marker>.</example>
         </rule>
-        <rulegroup id="JONG_UN" name="Kim Jong-un" default="temp_off">
+        <rulegroup id="JONG_UN" name="Kim Jong-un">
             <url>https://de.wikipedia.org/wiki/Kim_Jong-un</url>
             <rule>
                 <pattern>
@@ -8700,6 +8706,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <example correction="von der Leyen">Ursula <marker>Von de Leyen</marker> ist eine deutsche Politikerin.</example>
             <example>Von der leben sie heute.</example>
             <example correction="von der Leyens">Während <marker>Von Der Leyens</marker> Berateraffäre.</example>
+        </rule>
+        <rule id="EMMANUEL_MACRON" name="Emmanuel Macron" default="temp_off">
+            <antipattern case_sensitive="yes">
+                <token>Emmanuel</token>
+                <token>Macron</token>
+            </antipattern>
+            <pattern>
+                <token regexp="yes">E?mm?anue?ll?e?</token>
+                <token regexp="yes">Macrone?</token>
+            </pattern>
+            <message>Meinten Sie <suggestion>Emmanuel Macron</suggestion> (= Politiker)?</message>
+            <url>https://de.wikipedia.org/wiki/Emmanuel_Macron</url>
+            <example correction="Emmanuel Macron"><marker>Manuel macron</marker> ist ein französischer Politiker.</example>
+            <example><marker>Emmanuel Macron</marker> ist ein französischer Politiker.</example>
         </rule>
         <rule id="JEROME_BOATENG" name="Jérôme Boateng">
             <antipattern case_sensitive="yes">
@@ -16255,19 +16275,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <rule>
                 <pattern>
                     <token regexp="yes">ust\.?</token>
-                    <token regexp="yes">id(-?nr)?</token>
+                    <token spacebefore="no" min="0">.</token>
+                    <token regexp="yes">\-?id(-?nr)?</token>
                     <token spacebefore="no">.</token>
                 </pattern>
                 <message>Die empfohlene Abkürzung für 'Umsatzsteuer-Identifikationsnummer' ist <suggestion>USt-IdNr.</suggestion>.</message>
                 <example correction="USt-IdNr."><marker>Ust ID.</marker>: DEXXXXXXX</example>
+                <example correction="USt-IdNr."><marker>Ust.-Id.</marker>: DEXXXXXXX</example>
             </rule>
             <rule>
                 <pattern>
                     <token regexp="yes">ust\.?</token>
-                    <token regexp="yes">id(-?nr)?</token>
+                    <token spacebefore="no" min="0">.</token>
+                    <token regexp="yes">\-?id(-?nr)?</token>
                 </pattern>
                 <message>Die empfohlene Abkürzung für 'Umsatzsteuer-Identifikationsnummer' ist <suggestion>USt-IdNr.</suggestion>.</message>
                 <example correction="USt-IdNr."><marker>UST ID</marker>: DEXXXXXXX</example>
+                <example correction="USt-IdNr."><marker>Ust.Id</marker>: DEXXXXXXX</example>
+                <example correction="USt-IdNr."><marker>Ust.-Id</marker>: DEXXXXXXX</example>
             </rule>
         </rulegroup>
         <rulegroup id="ZWISCHEN_SEIT_BIS" name="'Zwischen ... bis ...'">
@@ -16596,13 +16621,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <pattern case_sensitive="yes">
                     <token postag="SENT_START"/>
                     <marker>
-                        <token regexp="yes">[lL]ieb.*<exception>Liebe</exception></token>
+                        <token regexp="yes">[lL]ieb.*<exception regexp="yes">Liebe|Liebste</exception></token>
                         <token regexp="yes">Grüße|Grüsse</token>
                     </marker>
                 </pattern>
-                <message>Möglicher Tippfehler: Meinten Sie die Schlussformel <suggestion>Liebe Grüße</suggestion>?</message>
+                <message>Möglicher Tippfehler: Meinten Sie die Schlussformel <suggestion>Liebe <match no="3" case_conversion="startupper" /></suggestion>?</message>
                 <short>Möglicher Tippfehler</short>
                 <example correction="Liebe Grüße"><marker>Lieb Grüße</marker></example>
+                <example correction="Liebe Grüsse"><marker>Lieb Grüsse</marker></example>
+                <example>Liebste Grüße auch von Karl.</example>
             </rule>
         </rulegroup>
         <rulegroup id="MIT_FREUNDLICHEN" name="'mit Freundlichen (freundlichen) grüßen (Grüßen)'">
@@ -16613,30 +16640,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                         <token>Freundlichen</token>
                     </marker>
                 </pattern>
-                <message>Meinten Sie <suggestion><match case_conversion="alllower" no="2"/></suggestion>?</message>
+                <message>Meinten Sie <suggestion><match case_conversion="alllower" no="2" /></suggestion>?</message>
                 <example correction="freundlichen">Mit <marker>Freundlichen</marker> Grüßen</example>
             </rule>
             <rule>
                 <pattern case_sensitive="yes">
                     <token regexp="yes">[mM]it</token>
-                    <token regexp="yes">(herz|freund)lichen|besten|lieben</token>
+                    <token regexp="yes">(herz|freund)lichen|besten|lieben|liebsten</token>
                     <marker>
-                        <token regexp="yes">grüßen|grüssen</token>
+                        <token regexp="yes">grüßen?|grüssen?</token>
                     </marker>
                 </pattern>
-                <message>Meinten Sie <suggestion>Grüßen</suggestion>?</message>
+                <message>Meinten Sie <suggestion><match no="3" case_conversion="startupper" regexp_match="(?i)en?$" regexp_replace="en" /></suggestion>?</message>
                 <example correction="Grüßen">Mit freundlichen <marker>grüßen</marker></example>
+                <example correction="Grüssen">Mit freundlichen <marker>grüsse</marker></example>
             </rule>
             <rule>
                 <pattern case_sensitive="yes">
-                    <token regexp="yes">(Herz|Freund)liche|Liebe|Viele|Beste</token>
+                    <token regexp="yes">(Herz|Freund)liche|Liebe|Viele|Beste|Liebste</token>
                     <marker>
                         <token regexp="yes">grüße|grüsse</token>
                     </marker>
                 </pattern>
-                <message>Meinten Sie <suggestion>Grüße</suggestion>?</message>
+                <message>Meinten Sie <suggestion><match no="2" case_conversion="startupper" /></suggestion>?</message>
                 <example correction="Grüße">Herzliche <marker>grüße</marker></example>
                 <example correction="Grüße">Viele <marker>grüße</marker></example>
+                <example correction="Grüsse">Liebste <marker>grüsse</marker></example>
             </rule>
         </rulegroup>
         <rulegroup id="VERBLEIBEN_WIR" name="'verbleibe ich' (altmodische Formel)" default="off">
@@ -18820,7 +18849,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                         <token regexp="yes" case_sensitive="yes">ab(fahrt|frage|fuhr|reise|sage)|an(fahrt|frage|klage|rede|reise|richte|sage|zeige)|asche|ausbeute|ausfahrt|ausfuhr|ausleihe|auslese|ausrede|ausreise|aussage|backe|bahre|band|beichte|beize|beule|beute|binde|blase|bombe|bräune|brause|braut|bremse|buche|bucht|bürde|bürste|creme|decke|delle|dichte|durchfahrt|durchreiche|durchreise|durchsage|dusche|düse|ehre|eiche|eile|einbrenne|einfahrt|einreise|erde|fahrt|falle|falte|feier|feile|flamme|flaute|fliege|fliese|flöte|flucht|folge|frage|fräse|fresse|fülle|furche|geige|gemeinde|glotze|gnade|grenze|grille|großtat|grosstat|gurke|hacke|halle|harke|härte|haut|hecke|hetze|hexe|hinfahrt|hinreise|höhle|hülle|hupe|hure|illustrierte|initiative|kacke|kante|kappe|karre|keile|kerbe|kette|keule|kippe|klage|klampfe|klappe|klatsche|klaue|klebe|klemme|klette|klinge|klingel|klinke|kloppe|knarre|knete|knospe|kotze|krähe|kralle|kurbel|kurve|kürze|kutsche|lade|last|lauge|lehne|lehre|leier|leiste|leuchte|liege|linse|locke|lüge|lymphe|menge|messe|miete|mühe|münze|nachfolge|nachfrage|nähe|naht|nässe|pappe|pauke|pause|pelle|perle|pfeife|pflanze|pisse|plane|posaune|predigt|presse|probe|prostituierte|pumpe|quelle|ramme|ranke|rassel|rast|rate|ratsche|raute|rede|reibe|reihe|reise|rinne|ritze|robbe|röhre|rolle|rotze|rückfrage|rüge|ruhe|rutsche|sage|säge|sahne|sause|salbe|schabe|schanze|scharte|schau|schaufel|schaukel|scheide|scheiße|scheisse|schelle|schenke|schere|schiene|schippe|schlampe|schlappe|schleife|schleppe|schleuder|schleuse|schließe|schliesse|schlinge|schmiede|schmiere|schnalle|schnauze|schneide|schnitte|schramme|schraube|schule|schuppe|schürze|schwäche|schwärze|schwebe|schwelle|schwemme|schwitze|sehne|seife|senke|sonne|sorge|spalte|spanne|sparte|speise|spende|sperre|spritze|spucke|spule|spüle|stärke|stelle|stiege|stimme|strafe|strebe|strecke|streife|strippe|stufe|stunde|stütze|suche|sucht|sülze|summe|taste|tat|taufe|trage|träne|tränke|trommel|trompete|tröte|tunke|tüte|unke|vollmacht|voraussage|vorfahrt|vorhersage|vormacht|wacht|walze|wand|wärme|warte|weide|weile|welle|wende|werft|wette|wichse|wiege|wiese|winde|wippe|wohltat|wolle|würze|zeche|zicke|zufuhr|zusage|zwinge</token>
                     </marker>
                     <token postag="VER:.+" postag_regexp="yes" regexp="yes" case_sensitive="yes">^[a-zäöü].+
-                        <exception regexp="yes">ein(en?)?|deutschen?|klaren?|bitte|dringend</exception>
+                        <exception regexp="yes">ein(en?)?|deutschen?|klaren?|bitte|dringend|anscheinend</exception>
+                        <exception postag="ADV:MOD" />
                     </token>
                 </pattern>
                 <message>&subanfang;<suggestion><match no="2" case_conversion="startupper"/></suggestion>&subende;</message>
@@ -18851,6 +18881,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <example correction="Schlampe">Diese blöde <marker>schlampe</marker> geht mir auf die Nerven.</example>
                 <example correction="Schmiere">Er hat immer <marker>schmiere</marker> gestanden, während ich dem Nachbarn die Äpfel klaute.</example>
                 <example>Ich warte kurz und düse los.</example>
+                <example>Zudem schau mal, ob das auch ein Fehler ist.</example>
+                <example>Tim sagte, er backe anscheinend auch andere Dinge außer Brötchen.</example>
             </rule>
             <rule>
                 <pattern>
@@ -30557,6 +30589,7 @@ Andere Projekte</example>
                 </marker>
             </pattern>
             <message>In dieser Redewendung wird <suggestion>Frage</suggestion> großgeschrieben.</message>
+            <url>https://www.duden.de/rechtschreibung/infrage</url>
             <short>&prgk;.</short>
             <example correction="Frage">etwas in <marker>frage</marker> stellen</example>
             <example correction="Frage">Das steht außer <marker>frage</marker>.</example>
@@ -32480,7 +32513,7 @@ Andere Projekte</example>
                 <example correction="Make-ups">Während des Auftragens ihres <marker>Make-Ups</marker> ging etwas schief.</example>
             </rule>
         </rulegroup>
-        <rulegroup id="POST_IT" name="'Post-it'" default="temp_off">
+        <rulegroup id="POST_IT" name="'Post-it'">
             <url>https://de.wikipedia.org/wiki/Klebezettel</url>
             <rule>
                 <pattern>
@@ -32605,6 +32638,33 @@ Andere Projekte</example>
                 <example correction="Drive-ins">Während des <marker>Drive-Ins</marker> suchte er panisch sein Geld.</example>
             </rule>
         </rulegroup>
+        <rulegroup id="BEST_OF" name="'Best-of'">
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes">Best</token>
+                    <token regexp="yes">ofs?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion>Best-<match no="2" case_conversion="alllower" /></suggestion> (= Auswahl des Besten)?</message>
+                <url>https://www.duden.de/rechtschreibung/Best_of</url>
+                <example correction="Best-of">Sein <marker>Best Of</marker> machte bereits mehrere Millionen Umsatz.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes" regexp="yes">Bestofs?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion><match no="1" regexp_match="Bestof" regexp_replace="Best-of" /></suggestion> (= Auswahl des Besten)?</message>
+                <url>https://www.duden.de/rechtschreibung/Best_of</url>
+                <example correction="Best-of">Sie veröffentlichten ein <marker>Bestof</marker> seiner Hits.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes" regexp="yes">Best-?Ofs?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion><match no="1" regexp_match="(?i)best-?of" regexp_replace="Best-of" /></suggestion> (= Auswahl des Besten)?</message>
+                <url>https://www.duden.de/rechtschreibung/Best_of</url>
+                <example correction="Best-ofs">Er veröffentlichte mehrere <marker>Best-Ofs</marker>.</example>
+            </rule>
+        </rulegroup>
         <rulegroup id="START_UP" name="'Start-up'">
             <rule>
                 <pattern>
@@ -32630,6 +32690,33 @@ Andere Projekte</example>
                 <message>Meinten Sie das Nomen <suggestion><match no="1" regexp_match="(?i)start-?up" regexp_replace="Start-up" /></suggestion> (= junges Unternehmen)?</message>
                 <url>https://www.duden.de/rechtschreibung/Start_up</url>
                 <example correction="Start-ups">Er gründete mehrere <marker>Start-Ups</marker>.</example>
+            </rule>
+        </rulegroup>
+        <rulegroup id="LINE_UP" name="'Line-up'">
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes">Line</token>
+                    <token regexp="yes">ups?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion>Line-<match no="2" case_conversion="alllower" /></suggestion> (= Besetzung der Musiker eines Festival oder Schlagreihenfolge beim Baseball)?</message>
+                <url>https://de.wikipedia.org/wiki/Line-up</url>
+                <example correction="Line-up">Das <marker>Line Up</marker> für das Konzert stand bereits Monate vorher fest.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes" regexp="yes">Lineups?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion><match no="1" regexp_match="Lineup" regexp_replace="Line-up" /></suggestion> (= Besetzung der Musiker eines Festival oder Schlagreihenfolge beim Baseball)?</message>
+                <url>https://de.wikipedia.org/wiki/Line-up</url>
+                <example correction="Line-up">Das <marker>Lineup</marker> gefiel den Zuschauern.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token case_sensitive="yes" regexp="yes">Line-?Ups?</token>
+                </pattern>
+                <message>Meinten Sie das Nomen <suggestion><match no="1" regexp_match="(?i)line-?up" regexp_replace="Line-up" /></suggestion> (= Besetzung der Musiker eines Festival oder Schlagreihenfolge beim Baseball)?</message>
+                <url>https://de.wikipedia.org/wiki/Line-up</url>
+                <example correction="Line-ups">Sie waren bereits Teil eines <marker>Line-Ups</marker>.</example>
             </rule>
         </rulegroup>
         <rulegroup id="CLOSE_UP" name="'Close-up'">
@@ -41678,6 +41765,7 @@ Andere Projekte</example>
                     <token case_sensitive="yes" regexp="yes">Frage|Stand</token>
                 </pattern>
                 <message>Empfehlung: Möchten Sie die Schreibweise <suggestion><match no="1"/><match no="2" case_conversion ="alllower"/></suggestion> verwenden?</message>
+                <url>https://www.duden.de/rechtschreibung/infrage</url>
                 <short>&getrennt;.</short>
                 <example correction="infrage">Eine Teilung kommt nicht <marker>in Frage</marker>.</example>
                 <example correction="infrage">Das kommt nicht <marker>in Frage</marker>!</example>
